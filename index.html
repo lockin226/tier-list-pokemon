@@ -11,6 +11,7 @@
 <link rel="canonical" href="https://lockin226.github.io/tier-list-pokemon/">
 
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://lockin226.github.io/tier-list-pokemon/">
 <meta property="og:site_name" content="Tier list Pokémon">
 <meta property="og:title" content="Tier list Pokémon — note les 1212 Pokémon">
 <meta property="og:description" content="Note chaque Pokémon de -10 à +10, découvre ta tier list des générations et des types, et fais s'affronter tes favoris en tournoi.">
@@ -135,6 +136,16 @@ h2{font-size:15px;font-weight:600;margin:0 0 12px;letter-spacing:-.01em}
 .stagenav button:hover{border-color:var(--muted)}
 .opts{display:flex;gap:16px;justify-content:center;margin-top:18px;color:var(--muted);font-size:12.5px;flex-wrap:wrap}
 .opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
+/* La présentation en bas de page : documentation pour le visiteur, matière pour les moteurs.
+   Volontairement discrète, on ne la croise qu'en faisant défiler sous l'outil. */
+.intro{
+  max-width:640px;margin:64px auto 0;padding-top:28px;
+  border-top:1px solid var(--line);color:var(--muted);font-size:13.5px;line-height:1.7;
+}
+.intro h2{font-size:17px;color:var(--fg);margin:0 0 14px}
+.intro h3{font-size:14px;color:var(--fg);font-weight:600;margin:26px 0 8px;letter-spacing:-.01em}
+.intro p{margin:0 0 11px}
+.intro strong{color:var(--fg);font-weight:600}
 .hint{text-align:center;color:var(--muted);font-size:11.5px;margin-top:26px}
 kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 4px;font:inherit;font-size:11px}
 .done{text-align:center;padding:60px 0;color:var(--muted)}
@@ -325,7 +336,7 @@ th:first-child,td:first-child{text-align:left}
       <button data-view="duel">Duel</button>
       <button data-view="res">Résultats</button>
     </nav>
-    <div class="prog"><span id="prog">0 / 1025</span><small id="saveState" data-s="ok">sauvegardé</small></div>
+    <div class="prog"><span id="prog">0 / 1212</span><small id="saveState" data-s="ok">sauvegardé</small></div>
   </div>
   <div class="progbar"><i id="progbar"></i></div>
   <div class="warn" id="warn" hidden>
@@ -355,6 +366,63 @@ th:first-child,td:first-child{text-align:left}
     <p class="hint">
       Clavier : <kbd>1</kbd>…<kbd>9</kbd> pour noter · <kbd>←</kbd> <kbd>→</kbd> pour naviguer · <kbd>retour arrière</kbd> pour effacer
     </p>
+
+    <!-- Cette présentation sert autant aux visiteurs qu'aux moteurs de recherche :
+         sans elle, la page ne contient que des libellés de boutons, et Google n'a
+         rien pour comprendre de quoi parle le site. -->
+    <section class="intro">
+      <h2>Noter les Pokémon, et laisser le classement se faire</h2>
+      <p>Ce site sert à donner ton avis sur chaque Pokémon, un par un, puis à en tirer
+         des classements que tu n'as pas à construire à la main. Tu attribues des points,
+         le reste est calculé.</p>
+
+      <h3>Le système de points</h3>
+      <p>Neuf montants seulement : <strong>-10, -5, -3, -1, 0, +1, +3, +5 et +10</strong>.
+         Un Pokémon s'affiche au centre de l'écran, tu cliques sur le montant qui
+         correspond à ce que tu en penses, et le suivant arrive. Au clavier, les touches
+         1 à 9 vont encore plus vite. Tu peux aussi passer par la liste verticale pour
+         noter dans le désordre, revenir sur un choix, ou trier par tes meilleures notes.</p>
+
+      <h3>Trois tier lists, calculées automatiquement</h3>
+      <p>La <strong>tier list des générations</strong> existe en deux versions. La première
+         additionne les points bruts de chaque génération — les grosses générations y sont
+         avantagées, c'est assumé. La seconde divise ces points par le nombre de Pokémon
+         notés, ce qui remet Kanto et Kalos à égalité malgré leur différence de taille.</p>
+      <p>La <strong>tier list des types</strong> applique le même calcul aux dix-huit types :
+         elle révèle souvent des préférences qu'on ne se connaissait pas, du genre une
+         affection nette pour les Spectre ou un rejet des Insecte. Un Pokémon à deux types
+         compte pour ses deux types.</p>
+      <p>La <strong>tier list de tous les Pokémon</strong> range chaque créature notée dans
+         la ligne de son montant, du +10 au -10, en vignettes. C'est le récapitulatif visuel
+         de tout ton travail.</p>
+      <p>Chacune s'enregistre en image d'un clic, prête à être partagée.</p>
+
+      <h3>Le mode duel</h3>
+      <p>Noter dans l'absolu a ses limites : on n'est pas aussi sévère au Pokémon numéro 800
+         qu'au numéro 10. Le mode duel répond à ça en organisant un tournoi à élimination
+         directe : deux Pokémon s'affrontent, tu choisis ton préféré, le vainqueur monte d'un
+         tour, et l'arbre se remplit sous tes yeux. De huit participants jusqu'aux 1212, avec
+         des exemptions au premier tour quand le compte ne tombe pas juste. L'arbre s'exporte
+         lui aussi en image.</p>
+
+      <h3>Tout est là, formes comprises</h3>
+      <p>Les <strong>1025 Pokémon</strong> des neuf générations, de Kanto à Paldéa, plus
+         <strong>187 formes alternatives</strong> : les Méga-Évolutions — les 48 d'origine
+         et celles ajoutées par Légendes Pokémon&nbsp;: Z-A —, les formes Gigamax, et toutes
+         les formes régionales d'Alola, de Galar, de Hisui et de Paldéa. Soit
+         <strong>1212 entrées</strong> au total, avec leurs noms français, leurs types et
+         leurs illustrations officielles.</p>
+      <p>Une option permet de rattacher les formes soit à la génération qui les a
+         introduites, soit à celle du Pokémon d'origine — Méga-Dracaufeu compte alors pour
+         la sixième génération ou pour la première, au choix, et les classements se
+         recalculent.</p>
+
+      <h3>Sans compte, et sans rien envoyer nulle part</h3>
+      <p>Aucune inscription, aucune publicité, aucun suivi. Tes notes sont enregistrées dans
+         ton propre navigateur et n'en sortent jamais. Les boutons d'export et d'import
+         permettent de les transporter d'un appareil à l'autre, ou simplement d'en garder
+         une copie de sauvegarde.</p>
+    </section>
   </section>
 
   <!-- ======== LISTE ======== -->
