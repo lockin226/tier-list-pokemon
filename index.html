@@ -5,29 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tier list Pokémon — noter les 1212 Pokémon et classer les générations</title>
 
-<!-- ====================================================================
-     À FAIRE AVANT LA MISE EN LIGNE : remplacer les deux occurrences de
-     VOTRE-ADRESSE ci-dessous par l'adresse réelle du site, par exemple
-     tierlist-pokemon.pages.dev. Sans ça, l'aperçu affiché quand on partage
-     le lien sur Discord, WhatsApp ou les réseaux sociaux restera vide :
-     ces services ne lisent que le HTML brut, ils n'exécutent pas le script.
-     ==================================================================== -->
 <meta name="description" content="Note chaque Pokémon de -10 à +10 et obtiens automatiquement ta tier list des générations, des types et de tous les Pokémon. 1212 Pokémon, formes régionales, Méga-Évolutions et Gigamax comprises.">
 <meta name="theme-color" content="#111114">
 <meta name="color-scheme" content="light dark">
-<link rel="canonical" href="https://VOTRE-ADRESSE/">
+<link rel="canonical" href="https://lockin226.github.io/tier-list-pokemon/">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Tier list Pokémon">
 <meta property="og:title" content="Tier list Pokémon — note les 1212 Pokémon">
 <meta property="og:description" content="Note chaque Pokémon de -10 à +10, découvre ta tier list des générations et des types, et fais s'affronter tes favoris en tournoi.">
-<meta property="og:image" content="https://VOTRE-ADRESSE/og.png">
+<meta property="og:image" content="https://lockin226.github.io/tier-list-pokemon/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+
+<!-- Description lisible par les moteurs de recherche : elle leur dit qu'il s'agit
+     d'une application web gratuite et en français, ce que le HTML seul n'exprime pas. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Tier list Pokémon",
+  "url": "https://lockin226.github.io/tier-list-pokemon/",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Tout navigateur web",
+  "inLanguage": "fr-FR",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+  "description": "Note chaque Pokémon de -10 à +10 et obtiens automatiquement ta tier list des générations, des types et de tous les Pokémon. 1212 Pokémon, formes régionales, Méga-Évolutions et Gigamax comprises. Mode tournoi en duel et export des classements en image."
+}
+</script>
 <style>
 :root{
   --bg:#fbfbfa; --fg:#16161a; --muted:#7a7a85; --line:#e3e3e0;
@@ -59,7 +69,7 @@ header{
   border-bottom:1px solid var(--line);
 }
 .hwrap{max-width:960px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:14px}
-.brand{font-weight:600;letter-spacing:-.01em;margin-right:auto;white-space:nowrap}
+.brand{font-size:15px;font-weight:600;letter-spacing:-.01em;margin:0 auto 0 0;white-space:nowrap}
 .brand small{display:block;font-weight:400;color:var(--muted);font-size:11.5px;letter-spacing:0}
 nav{display:flex;gap:2px}
 nav button{
@@ -308,7 +318,7 @@ th:first-child,td:first-child{text-align:left}
 
 <header>
   <div class="hwrap">
-    <div class="brand">Tier list des générations<small>note chaque Pokémon, le classement se fait tout seul</small></div>
+    <h1 class="brand">Tier list Pokémon<small>note chaque Pokémon, le classement se fait tout seul</small></h1>
     <nav>
       <button data-view="rate" aria-current="true">Noter</button>
       <button data-view="list">Liste</button>

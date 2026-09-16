@@ -1,5 +1,7 @@
 # Tier list Pokémon
 
+**En ligne : <https://lockin226.github.io/tier-list-pokemon/>**
+
 Un site pour noter les 1212 Pokémon — formes régionales, Méga-Évolutions et Gigamax
 comprises — et en tirer automatiquement des tier lists des générations, des types et
 de tous les Pokémon. Avec un mode tournoi en duel et un export de chaque classement en image.
@@ -10,41 +12,23 @@ le fichier ; seules les images sont chargées depuis internet.
 
 ---
 
-## Mettre le site en ligne
+## Modifier le site
 
-### Avant toute chose : remplacer `VOTRE-ADRESSE`
+Le site est publié par GitHub Pages depuis la branche `main`. Il suffit de pousser :
 
-Ouvre `index.html` et cherche `VOTRE-ADRESSE` (deux occurrences, tout en haut du fichier).
-Remplace-les par l'adresse réelle du site une fois que tu la connaîtras, par exemple
-`tierlist-pokemon.pages.dev`.
+```
+git add index.html
+git commit -m "ce que j'ai changé"
+git push
+```
 
-Ces deux lignes servent à l'aperçu affiché quand quelqu'un colle le lien sur Discord,
-WhatsApp ou un réseau social. Elles doivent contenir une adresse complète : ces services
-lisent le HTML brut sans exécuter le script, donc ils ne peuvent pas la deviner.
-Le site fonctionne même si tu oublies, seul l'aperçu de partage restera vide.
+La mise en ligne prend une à deux minutes. Pour travailler en local avant de publier,
+ouvre simplement `index.html` dans un navigateur — tout fonctionne sauf la sauvegarde
+dans un fichier, que certains navigateurs réservent aux vraies adresses web.
 
-### Option A — Cloudflare Pages (recommandé)
-
-Bande passante illimitée, gratuit, et le site se met à jour tout seul à chaque `git push`.
-
-1. Crée un dépôt sur GitHub et pousse ce dossier dedans.
-2. Va sur [dash.cloudflare.com](https://dash.cloudflare.com) → **Workers & Pages** →
-   **Create** → **Pages** → **Connect to Git**.
-3. Choisis ton dépôt. Laisse la commande de build **vide** et le dossier de sortie
-   sur la racine : il n'y a rien à construire.
-4. **Save and Deploy.** Le site est en ligne en une minute sur `<nom>.pages.dev`.
-
-### Option B — GitHub Pages
-
-1. Pousse ce dossier sur GitHub.
-2. Dans le dépôt : **Settings** → **Pages** → Source : **Deploy from a branch**,
-   branche `main`, dossier `/ (root)`.
-3. Le site paraît sous `<pseudo>.github.io/<dépôt>` au bout de quelques minutes.
-
-### Un nom de domaine (facultatif)
-
-Une dizaine d'euros par an chez n'importe quel registrar. Les deux hébergeurs ci-dessus
-acceptent un domaine personnalisé gratuitement, certificat HTTPS compris.
+Attention si tu changes l'adresse du site : elle est écrite en dur à cinq endroits,
+dans `index.html` (balises `canonical`, `og:image` et données structurées),
+dans `robots.txt` et dans `sitemap.xml`.
 
 ---
 
@@ -55,7 +39,8 @@ acceptent un domaine personnalisé gratuitement, certificat HTTPS compris.
 | `index.html` | Le site entier : interface, données des 1212 Pokémon, logique, styles |
 | `favicon.svg` | La petite icône affichée dans l'onglet du navigateur |
 | `og.png` | L'aperçu 1200×630 affiché quand on partage le lien |
-| `README.md` | Ce fichier |
+| `robots.txt` | Autorise les moteurs de recherche et leur indique le plan du site |
+| `sitemap.xml` | Le plan du site, à re-soumettre après un changement d'adresse |
 
 ---
 
@@ -90,6 +75,18 @@ en débit, ce qui ferait tomber les images dès qu'il y a du monde sur le site.
 jsDelivr renvoie aussi l'en-tête d'autorisation entre domaines, ce dont dépend
 l'export des tier lists en image : sans lui, le navigateur refuserait d'enregistrer
 une image contenant des sprites venus d'ailleurs.
+
+---
+
+## Référencement
+
+Le nécessaire est en place : titre et description, un vrai `<h1>`, données structurées
+`WebApplication`, `robots.txt`, `sitemap.xml`, aperçu de partage et adresse canonique.
+
+Reste une étape qui demande un compte : inscrire le site sur
+[Google Search Console](https://search.google.com/search-console), y soumettre
+`sitemap.xml` et demander l'indexation. Sans ça, Google peut mettre des semaines
+à découvrir le site tout seul.
 
 ---
 

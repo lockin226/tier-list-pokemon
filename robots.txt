@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lockin226.github.io/tier-list-pokemon/sitemap.xml
