@@ -1,0 +1,15 @@
+# fichiers cachés créés par Windows et OneDrive
+desktop.ini
+Thumbs.db
+ehthumbs.db
+$RECYCLE.BIN/
+
+# fichiers cachés créés par macOS
+.DS_Store
+
+# dossiers d'éditeurs
+.vscode/
+.idea/
+
+# sauvegardes exportées depuis le site, à ne pas publier
+mes-notes-pokemon*.json

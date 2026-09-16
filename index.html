@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tier list Pokémon — noter les 1212 Pokémon et classer les générations</title>
+
+<!-- ====================================================================
+     À FAIRE AVANT LA MISE EN LIGNE : remplacer les deux occurrences de
+     VOTRE-ADRESSE ci-dessous par l'adresse réelle du site, par exemple
+     tierlist-pokemon.pages.dev. Sans ça, l'aperçu affiché quand on partage
+     le lien sur Discord, WhatsApp ou les réseaux sociaux restera vide :
+     ces services ne lisent que le HTML brut, ils n'exécutent pas le script.
+     ==================================================================== -->
+<meta name="description" content="Note chaque Pokémon de -10 à +10 et obtiens automatiquement ta tier list des générations, des types et de tous les Pokémon. 1212 Pokémon, formes régionales, Méga-Évolutions et Gigamax comprises.">
+<meta name="theme-color" content="#111114">
+<meta name="color-scheme" content="light dark">
+<link rel="canonical" href="https://VOTRE-ADRESSE/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tier list Pokémon">
+<meta property="og:title" content="Tier list Pokémon — note les 1212 Pokémon">
+<meta property="og:description" content="Note chaque Pokémon de -10 à +10, découvre ta tier list des générations et des types, et fais s'affronter tes favoris en tournoi.">
+<meta property="og:image" content="https://VOTRE-ADRESSE/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+:root{
+  --bg:#fbfbfa; --fg:#16161a; --muted:#7a7a85; --line:#e3e3e0;
+  --card:#ffffff; --shadow:0 1px 2px rgba(0,0,0,.05);
+  --neg:#d0342c; --pos:#1f9254; --zero:#8a8a94;
+  --tS:#ff7f7f; --tA:#ffbf7f; --tB:#ffdf7f; --tC:#ffff7f;
+  --tD:#bfff7f; --tE:#7fffff; --tF:#cf9fff;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#111114; --fg:#ececed; --muted:#8c8c96; --line:#2a2a30;
+    --card:#191920; --shadow:none;
+    --neg:#f2695f; --pos:#4cc98a; --zero:#8a8a94;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--fg);
+  font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+a{color:inherit}
+
+/* ---------- barre du haut ---------- */
+header{
+  position:sticky;top:0;z-index:20;background:var(--bg);
+  border-bottom:1px solid var(--line);
+}
+.hwrap{max-width:960px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:14px}
+.brand{font-weight:600;letter-spacing:-.01em;margin-right:auto;white-space:nowrap}
+.brand small{display:block;font-weight:400;color:var(--muted);font-size:11.5px;letter-spacing:0}
+nav{display:flex;gap:2px}
+nav button{
+  padding:6px 12px;border-radius:999px;color:var(--muted);font-size:13.5px;
+}
+nav button:hover{color:var(--fg)}
+nav button[aria-current="true"]{background:var(--fg);color:var(--bg)}
+.prog{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;line-height:1.3}
+.prog small{display:block;font-size:10.5px;letter-spacing:.01em}
+#saveState[data-s="ok"]{color:var(--pos)}
+#saveState[data-s="saving"]{opacity:.6}
+#saveState[data-s="fail"]{color:var(--neg)}
+.progbar{height:2px;background:var(--line)}
+.progbar>i{display:block;height:100%;background:var(--fg);width:0;transition:width .25s}
+
+footer{
+  margin-top:56px;padding-top:20px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:11.5px;line-height:1.65;
+}
+footer p{margin:0 0 8px}
+footer strong{color:var(--fg);font-weight:600}
+footer a{color:var(--muted);text-decoration:underline}
+footer a:hover{color:var(--fg)}
+main{max-width:960px;margin:0 auto;padding:24px 16px 80px}
+.view{display:none}
+.view.on{display:block}
+h2{font-size:15px;font-weight:600;margin:0 0 12px;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:12.5px;margin:-8px 0 16px}
+
+/* ---------- notation (les 9 boutons) ---------- */
+.scale{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.scale button{
+  border:1px solid var(--line);border-radius:8px;background:var(--card);
+  font-variant-numeric:tabular-nums;font-weight:500;transition:transform .08s,border-color .12s;
+}
+.scale button:hover{transform:translateY(-2px)}
+.scale button[data-sel="1"]{color:#fff;border-color:transparent}
+.scale.big button{min-width:58px;padding:12px 6px;font-size:16px}
+.scale.mini button{min-width:31px;padding:4px 0;font-size:12px;border-radius:6px}
+.scale button[data-sign="-"]{color:var(--neg)}
+.scale button[data-sign="0"]{color:var(--zero)}
+.scale button[data-sign="+"]{color:var(--pos)}
+.scale button[data-sel="1"][data-sign="-"]{background:var(--neg);color:#fff}
+.scale button[data-sel="1"][data-sign="0"]{background:var(--zero);color:#fff}
+.scale button[data-sel="1"][data-sign="+"]{background:var(--pos);color:#fff}
+
+/* ---------- vue Noter ---------- */
+.stage{text-align:center;padding:8px 0 0}
+.art{
+  width:260px;height:260px;margin:0 auto;display:flex;align-items:center;justify-content:center;
+}
+.art img{max-width:100%;max-height:100%;image-rendering:auto}
+.pname{font-size:26px;font-weight:600;letter-spacing:-.02em;margin:6px 0 2px}
+.badge{
+  font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);
+  border:1px solid var(--line);border-radius:999px;padding:2px 7px;margin-left:9px;vertical-align:middle;
+}
+.pmeta{color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums;margin-bottom:4px}
+.types{display:flex;gap:5px;justify-content:center;margin:8px 0 20px;min-height:20px}
+.type{font-size:11px;padding:2px 9px;border-radius:999px;color:#fff;opacity:.92}
+.stagenav{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:22px;color:var(--muted);font-size:12.5px}
+.stagenav button{border:1px solid var(--line);border-radius:8px;padding:5px 12px;font-size:12.5px}
+.stagenav button:hover{border-color:var(--muted)}
+.opts{display:flex;gap:16px;justify-content:center;margin-top:18px;color:var(--muted);font-size:12.5px;flex-wrap:wrap}
+.opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.hint{text-align:center;color:var(--muted);font-size:11.5px;margin-top:26px}
+kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 4px;font:inherit;font-size:11px}
+.done{text-align:center;padding:60px 0;color:var(--muted)}
+.allrated{text-align:center;color:var(--muted);font-size:12.5px;margin:0 0 14px}
+.warn{
+  background:#fff4e5;color:#7a4b00;border-bottom:1px solid #f0d8b0;
+  font-size:12.5px;padding:8px 16px;text-align:center;
+}
+.warn button{text-decoration:underline;font-size:12.5px;font-weight:600}
+@media (prefers-color-scheme: dark){ .warn{background:#2e2313;color:#f0c47a;border-bottom-color:#453520} }
+.notice{
+  background:var(--card);border-bottom:1px solid var(--line);color:var(--muted);
+  font-size:12.5px;padding:8px 16px;text-align:center;
+}
+.notice button{text-decoration:underline;font-weight:600;color:var(--fg);font-size:12.5px}
+.fileline{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:16px}
+.fileline .on{color:var(--pos)}
+.fileline button{text-decoration:underline;color:var(--fg);font-size:12.5px}
+.fileline b{color:var(--fg);font-weight:600}
+
+/* ---------- vue Liste ---------- */
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tools input,.tools select{
+  font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--line);
+  border-radius:8px;background:var(--card);color:var(--fg);
+}
+.tools input{flex:1;min-width:150px}
+.tools input:focus,.tools select:focus{outline:1px solid var(--muted)}
+.rows{border-top:1px solid var(--line)}
+.row{
+  display:flex;align-items:center;gap:10px;padding:6px 4px;border-bottom:1px solid var(--line);
+  content-visibility:auto;contain-intrinsic-size:auto 46px;
+}
+.row.rated{background:linear-gradient(90deg,color-mix(in srgb,var(--fg) 3%,transparent),transparent 40%)}
+.row .num{color:var(--muted);font-size:11.5px;font-variant-numeric:tabular-nums;width:38px;flex:none}
+.row .sp{width:40px;height:40px;flex:none;display:flex;align-items:center;justify-content:center}
+.row .sp img{width:40px;height:40px;object-fit:contain}
+.row .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+.row .nm em{font-style:normal;color:var(--muted);font-size:11px;margin-left:7px}
+/* les formes se lisent comme rattachées au Pokémon juste au-dessus */
+.row.isform .num{opacity:.45}
+.row.isform .nm{padding-left:14px;position:relative}
+.row.isform .nm::before{content:"↳";position:absolute;left:0;color:var(--muted);font-size:11px}
+.row .scale{flex:none}
+.empty{color:var(--muted);padding:30px 0;text-align:center}
+
+/* ---------- vue Duel ---------- */
+.duelbar{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;margin-bottom:18px}
+.duelbar h2{margin:0}
+.duelbar .step{color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums;margin-right:auto}
+.duelbar button{border:1px solid var(--line);border-radius:8px;padding:5px 12px;font-size:12.5px;color:var(--muted)}
+.duelbar button:hover{color:var(--fg);border-color:var(--muted)}
+
+.arena{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;margin-bottom:34px}
+.fighter{
+  border:1px solid var(--line);border-radius:12px;background:var(--card);padding:18px 12px 16px;
+  text-align:center;cursor:pointer;transition:border-color .12s,transform .08s;
+}
+.fighter:hover{border-color:var(--fg);transform:translateY(-2px)}
+.fighter .art{width:190px;height:190px}
+.fighter .fname{font-size:19px;font-weight:600;letter-spacing:-.01em;margin-top:4px}
+.fighter .fmeta{color:var(--muted);font-size:11.5px;font-variant-numeric:tabular-nums;margin-top:2px}
+.fighter .types{margin:8px 0 0}
+.fighter .key{
+  display:inline-block;margin-top:12px;color:var(--muted);font-size:11px;
+  border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;
+}
+.vs{color:var(--muted);font-size:13px;font-weight:600;letter-spacing:.08em}
+
+.champion{
+  text-align:center;border:1px solid var(--line);border-radius:12px;background:var(--card);
+  padding:22px 16px;margin-bottom:30px;
+}
+.champion .art{width:210px;height:210px}
+.champion .crown{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.1em}
+.champion .cname{font-size:27px;font-weight:600;letter-spacing:-.02em;margin-top:4px}
+
+/* l'arbre : une colonne par tour, les matchs répartis à hauteur égale */
+.bracket{display:flex;gap:26px;overflow-x:auto;padding-bottom:10px;align-items:stretch}
+/* le titre reste en haut, seuls les matchs se répartissent sur la hauteur */
+.bcol{display:flex;flex-direction:column;flex:none;min-width:158px}
+.bround{display:flex;flex-direction:column;justify-content:space-around;flex:1;gap:8px}
+.brtitle{
+  color:var(--muted);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+  text-align:center;padding-bottom:10px;flex:none;
+}
+.bmatch{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--card);position:relative}
+.bmatch::after{
+  content:"";position:absolute;left:100%;top:50%;width:26px;border-top:1px solid var(--line);
+}
+.bcol:last-child .bmatch::after{display:none}
+.bslot{display:flex;align-items:center;gap:6px;padding:3px 7px;font-size:12px}
+.bslot + .bslot{border-top:1px solid var(--line)}
+.bslot img{width:26px;height:26px;object-fit:contain;flex:none}
+.bslot span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.bslot.win span{color:var(--fg);font-weight:600}
+.bslot.lose{opacity:.42}
+.bslot.empty{color:var(--muted);font-style:italic;min-height:32px;align-items:center}
+.bmatch.bye{border-style:dashed}
+.bmatch.now{border-color:var(--fg);box-shadow:0 0 0 2px color-mix(in srgb,var(--fg) 18%,transparent)}
+
+/* ---------- vue Résultats ---------- */
+.kpis{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:22px}
+.segbar{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.segbar button{padding:7px 14px;font-size:13.5px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.segbar button:hover{color:var(--fg)}
+.segbar button[aria-current="true"]{color:var(--fg);border-bottom-color:var(--fg)}
+/* vignettes de la tier list des Pokémon */
+.pchip{display:block;width:46px;height:46px;border-radius:6px;flex:none}
+.pchip img{width:100%;height:100%;object-fit:contain;display:block}
+.pchip:hover{background:color-mix(in srgb,var(--fg) 8%,transparent)}
+.tbody-inner{display:flex;flex-wrap:wrap;gap:1px;flex:1;min-width:0}
+.pngbar{margin-top:12px}
+.pngbar button{border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:12.5px;color:var(--muted)}
+.pngbar button:hover{color:var(--fg);border-color:var(--muted)}
+.pngbar button:disabled{opacity:.5;cursor:default}
+.tcount{
+  color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums;
+  align-self:center;margin-left:auto;padding:0 6px;flex:none;
+}
+.tchip{
+  display:flex;flex-direction:column;gap:1px;padding:4px 10px;border-radius:7px;
+  color:#fff;line-height:1.3;
+}
+.tchip b{font-size:12.5px;font-weight:600}
+.tchip span{font-size:11px;opacity:.8;font-variant-numeric:tabular-nums}
+.kpi b{display:block;font-size:22px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.kpi span{color:var(--muted);font-size:12px}
+.tier{display:flex;gap:8px;margin-bottom:6px;align-items:stretch}
+.tlab{
+  width:42px;flex:none;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:17px;color:#16161a;
+}
+.tbody{
+  flex:1;display:flex;gap:6px;flex-wrap:wrap;padding:6px;border:1px solid var(--line);
+  border-radius:8px;background:var(--card);min-height:46px;align-items:center;
+}
+.gchip{
+  display:flex;flex-direction:column;gap:1px;padding:5px 11px;border-radius:7px;
+  border:1px solid var(--line);background:var(--bg);line-height:1.25;
+}
+.gchip b{font-size:13px;font-weight:600}
+.gchip span{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tbody.none{color:var(--muted);font-size:12.5px;padding-left:12px}
+table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{text-align:right;padding:7px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:400;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+th:first-child,td:first-child{text-align:left}
+.pos{color:var(--pos)}.neg{color:var(--neg)}
+.blk{margin-bottom:34px}
+.setting{
+  font-size:12.5px;color:var(--muted);margin:-8px 0 28px;padding:10px 12px;
+  border:1px solid var(--line);border-radius:8px;background:var(--card);
+}
+.setting select{
+  font:inherit;font-size:12.5px;padding:3px 6px;border:1px solid var(--line);
+  border-radius:6px;background:var(--bg);color:var(--fg);
+}
+.setting em{display:block;font-style:normal;margin-top:5px;opacity:.75}
+.foot{display:flex;gap:8px;flex-wrap:wrap;margin-top:34px;padding-top:18px;border-top:1px solid var(--line)}
+.foot button{border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:12.5px;color:var(--muted)}
+.foot button:hover{color:var(--fg);border-color:var(--muted)}
+.foot .danger:hover{color:var(--neg);border-color:var(--neg)}
+
+@media (max-width:600px){
+  .art{width:200px;height:200px}
+  .pname{font-size:22px}
+  .arena{grid-template-columns:1fr;gap:8px}
+  .fighter .art{width:150px;height:150px}
+  .fighter .key{display:none}
+  .vs{text-align:center}
+  .scale.big button{min-width:44px;padding:10px 4px;font-size:14px}
+  .row .scale{width:100%}
+  .row{flex-wrap:wrap;contain-intrinsic-size:auto 78px}
+  .row .nm{flex:1 1 auto}
+  .hint{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hwrap">
+    <div class="brand">Tier list des générations<small>note chaque Pokémon, le classement se fait tout seul</small></div>
+    <nav>
+      <button data-view="rate" aria-current="true">Noter</button>
+      <button data-view="list">Liste</button>
+      <button data-view="duel">Duel</button>
+      <button data-view="res">Résultats</button>
+    </nav>
+    <div class="prog"><span id="prog">0 / 1025</span><small id="saveState" data-s="ok">sauvegardé</small></div>
+  </div>
+  <div class="progbar"><i id="progbar"></i></div>
+  <div class="warn" id="warn" hidden>
+    Ton navigateur refuse d'enregistrer sur cet appareil : tes notes seront perdues en rechargeant la page.
+    <button type="button" id="warnExp">Sauvegarde-les dans un fichier</button>.
+  </div>
+  <div class="notice" id="notice" hidden>
+    Un fichier de sauvegarde est lié à ce site.
+    <button type="button" id="noticeBtn">Reconnecter</button>
+    pour reprendre l'enregistrement automatique dedans.
+  </div>
+</header>
+
+<main>
+
+  <!-- ======== NOTER ======== -->
+  <section class="view on" id="v-rate">
+    <div class="stage" id="stage"></div>
+    <div class="opts">
+      <label><input type="checkbox" id="skipRated" checked> Passer ceux déjà notés</label>
+      <label><input type="checkbox" id="shuffle"> Ordre aléatoire</label>
+      <label><input type="checkbox" id="withForms" checked> Formes alternatives</label>
+      <label>Génération
+        <select id="genRate"><option value="0">toutes</option></select>
+      </label>
+    </div>
+    <p class="hint">
+      Clavier : <kbd>1</kbd>…<kbd>9</kbd> pour noter · <kbd>←</kbd> <kbd>→</kbd> pour naviguer · <kbd>retour arrière</kbd> pour effacer
+    </p>
+  </section>
+
+  <!-- ======== LISTE ======== -->
+  <section class="view" id="v-list">
+    <div class="tools">
+      <input type="search" id="q" placeholder="Rechercher un Pokémon…" autocomplete="off">
+      <select id="genList"><option value="0">Toutes les générations</option></select>
+      <select id="statut">
+        <option value="all">Tous</option>
+        <option value="rated">Notés</option>
+        <option value="unrated">Non notés</option>
+      </select>
+      <select id="formFilter">
+        <option value="all">Formes comprises</option>
+        <option value="base">Formes de base seules</option>
+        <option value="form">Formes alternatives seules</option>
+      </select>
+      <select id="tri">
+        <option value="num">Ordre du Pokédex</option>
+        <option value="best">Meilleures notes</option>
+        <option value="worst">Pires notes</option>
+        <option value="alpha">Alphabétique</option>
+      </select>
+    </div>
+    <div class="rows" id="rows"></div>
+  </section>
+
+  <!-- ======== DUEL ======== -->
+  <section class="view" id="v-duel">
+    <div id="duelHead"></div>
+    <div id="duelPlay"></div>
+    <div id="duelTree"></div>
+  </section>
+
+  <!-- ======== RÉSULTATS ======== -->
+  <section class="view" id="v-res">
+    <div id="resKpis"></div>
+    <div class="segbar" id="segbar">
+      <button data-res="gen" aria-current="true">Générations</button>
+      <button data-res="poke">Pokémon</button>
+      <button data-res="type">Types</button>
+    </div>
+    <div id="resBody"></div>
+  </section>
+
+
+<footer>
+  <p><strong>Tes notes ne quittent pas ton appareil.</strong> Elles sont enregistrées dans ton
+     navigateur : personne d'autre n'y a accès, et aucun compte n'est nécessaire.
+     Utilise « Exporter mes notes » pour les emporter ailleurs.</p>
+  <p>Noms français, types et images proviennent de <a href="https://pokeapi.co" target="_blank" rel="noopener">PokéAPI</a>.
+     Site de fans sans but lucratif, sans aucun lien avec Nintendo, Game Freak ou The Pokémon Company.
+     Pokémon et les noms des créatures sont leurs marques déposées.</p>
+</footer>
+</main>
+
+<input type="file" id="file" accept="application/json" hidden>
+
+<script>
+"use strict";
+
+/* ------------------------------------------------------------------
+   Données : [nom français, type1, type2?] pour les Pokémon 1 → 1025
+   (source : dumps CSV de PokéAPI, embarqués pour fonctionner hors ligne)
+------------------------------------------------------------------ */
+const POKE_RAW = [["Bulbizarre",12,4],["Herbizarre",12,4],["Florizarre",12,4],["Salamèche",10],["Reptincel",10],["Dracaufeu",10,3],["Carapuce",11],["Carabaffe",11],["Tortank",11],["Chenipan",7],["Chrysacier",7],["Papilusion",7,3],["Aspicot",7,4],["Coconfort",7,4],["Dardargnan",7,4],["Roucool",1,3],["Roucoups",1,3],["Roucarnage",1,3],["Rattata",1],["Rattatac",1],["Piafabec",1,3],["Rapasdepic",1,3],["Abo",4],["Arbok",4],["Pikachu",13],["Raichu",13],["Sabelette",5],["Sablaireau",5],["Nidoran♀",4],["Nidorina",4],["Nidoqueen",4,5],["Nidoran♂",4],["Nidorino",4],["Nidoking",4,5],["Mélofée",18],["Mélodelfe",18],["Goupix",10],["Feunard",10],["Rondoudou",1,18],["Grodoudou",1,18],["Nosferapti",4,3],["Nosferalto",4,3],["Mystherbe",12,4],["Ortide",12,4],["Rafflesia",12,4],["Paras",7,12],["Parasect",7,12],["Mimitoss",7,4],["Aéromite",7,4],["Taupiqueur",5],["Triopikeur",5],["Miaouss",1],["Persian",1],["Psykokwak",11],["Akwakwak",11],["Férosinge",2],["Colossinge",2],["Caninos",10],["Arcanin",10],["Ptitard",11],["Têtarte",11],["Tartard",11,2],["Abra",14],["Kadabra",14],["Alakazam",14],["Machoc",2],["Machopeur",2],["Mackogneur",2],["Chétiflor",12,4],["Boustiflor",12,4],["Empiflor",12,4],["Tentacool",11,4],["Tentacruel",11,4],["Racaillou",6,5],["Gravalanch",6,5],["Grolem",6,5],["Ponyta",10],["Galopa",10],["Ramoloss",11,14],["Flagadoss",11,14],["Magnéti",13,9],["Magnéton",13,9],["Canarticho",1,3],["Doduo",1,3],["Dodrio",1,3],["Otaria",11],["Lamantine",11,15],["Tadmorv",4],["Grotadmorv",4],["Kokiyas",11],["Crustabri",11,15],["Fantominus",8,4],["Spectrum",8,4],["Ectoplasma",8,4],["Onix",6,5],["Soporifik",14],["Hypnomade",14],["Krabby",11],["Krabboss",11],["Voltorbe",13],["Électrode",13],["Noeunoeuf",12,14],["Noadkoko",12,14],["Osselait",5],["Ossatueur",5],["Kicklee",2],["Tygnon",2],["Excelangue",1],["Smogo",4],["Smogogo",4],["Rhinocorne",5,6],["Rhinoféros",5,6],["Leveinard",1],["Saquedeneu",12],["Kangourex",1],["Hypotrempe",11],["Hypocéan",11],["Poissirène",11],["Poissoroy",11],["Stari",11],["Staross",11,14],["M. Mime",14,18],["Insécateur",7,3],["Lippoutou",15,14],["Élektek",13],["Magmar",10],["Scarabrute",7],["Tauros",1],["Magicarpe",11],["Léviator",11,3],["Lokhlass",11,15],["Métamorph",1],["Évoli",1],["Aquali",11],["Voltali",13],["Pyroli",10],["Porygon",1],["Amonita",6,11],["Amonistar",6,11],["Kabuto",6,11],["Kabutops",6,11],["Ptéra",6,3],["Ronflex",1],["Artikodin",15,3],["Électhor",13,3],["Sulfura",10,3],["Minidraco",16],["Draco",16],["Dracolosse",16,3],["Mewtwo",14],["Mew",14],["Germignon",12],["Macronium",12],["Méganium",12],["Héricendre",10],["Feurisson",10],["Typhlosion",10],["Kaiminus",11],["Crocrodil",11],["Aligatueur",11],["Fouinette",1],["Fouinar",1],["Hoothoot",1,3],["Noarfang",1,3],["Coxy",7,3],["Coxyclaque",7,3],["Mimigal",7,4],["Migalos",7,4],["Nostenfer",4,3],["Loupio",11,13],["Lanturn",11,13],["Pichu",13],["Mélo",18],["Toudoudou",1,18],["Togepi",18],["Togetic",18,3],["Natu",14,3],["Xatu",14,3],["Wattouat",13],["Lainergie",13],["Pharamp",13],["Joliflor",12],["Marill",11,18],["Azumarill",11,18],["Simularbre",6],["Tarpaud",11],["Granivol",12,3],["Floravol",12,3],["Cotovol",12,3],["Capumain",1],["Tournegrin",12],["Héliatronc",12],["Yanma",7,3],["Axoloto",11,5],["Maraiste",11,5],["Mentali",14],["Noctali",17],["Cornèbre",17,3],["Roigada",11,14],["Feuforêve",8],["Zarbi",14],["Qulbutoké",14],["Girafarig",1,14],["Pomdepik",7],["Foretress",7,9],["Insolourdo",1],["Scorplane",5,3],["Steelix",9,5],["Snubbull",18],["Granbull",18],["Qwilfish",11,4],["Cizayox",7,9],["Caratroc",7,6],["Scarhino",7,2],["Farfuret",17,15],["Teddiursa",1],["Ursaring",1],["Limagma",10],["Volcaropod",10,6],["Marcacrin",15,5],["Cochignon",15,5],["Corayon",11,6],["Rémoraid",11],["Octillery",11],["Cadoizo",15,3],["Démanta",11,3],["Airmure",9,3],["Malosse",17,10],["Démolosse",17,10],["Hyporoi",11,16],["Phanpy",5],["Donphan",5],["Porygon2",1],["Cerfrousse",1],["Queulorior",1],["Debugant",2],["Kapoera",2],["Lippouti",15,14],["Élekid",13],["Magby",10],["Écrémeuh",1],["Leuphorie",1],["Raikou",13],["Entei",10],["Suicune",11],["Embrylex",6,5],["Ymphect",6,5],["Tyranocif",6,17],["Lugia",14,3],["Ho-Oh",10,3],["Celebi",14,12],["Arcko",12],["Massko",12],["Jungko",12],["Poussifeu",10],["Galifeu",10,2],["Braségali",10,2],["Gobou",11],["Flobio",11,5],["Laggron",11,5],["Medhyèna",17],["Grahyèna",17],["Zigzaton",1],["Linéon",1],["Chenipotte",7],["Armulys",7],["Charmillon",7,3],["Blindalys",7],["Papinox",7,4],["Nénupiot",11,12],["Lombre",11,12],["Ludicolo",11,12],["Grainipiot",12],["Pifeuil",12,17],["Tengalice",12,17],["Nirondelle",1,3],["Hélédelle",1,3],["Goélise",11,3],["Bekipan",11,3],["Tarsal",14,18],["Kirlia",14,18],["Gardevoir",14,18],["Arakdo",7,11],["Maskadra",7,3],["Balignon",12],["Chapignon",12,2],["Parecool",1],["Vigoroth",1],["Monaflèmit",1],["Ningale",7,5],["Ninjask",7,3],["Munja",7,8],["Chuchmur",1],["Ramboum",1],["Brouhabam",1],["Makuhita",2],["Hariyama",2],["Azurill",1,18],["Tarinor",6],["Skitty",1],["Delcatty",1],["Ténéfix",17,8],["Mysdibule",9,18],["Galekid",9,6],["Galegon",9,6],["Galeking",9,6],["Méditikka",2,14],["Charmina",2,14],["Dynavolt",13],["Élecsprint",13],["Posipi",13],["Négapi",13],["Muciole",7],["Lumivole",7],["Rosélia",12,4],["Gloupti",4],["Avaltout",4],["Carvanha",11,17],["Sharpedo",11,17],["Wailmer",11],["Wailord",11],["Chamallot",10,5],["Camérupt",10,5],["Chartor",10],["Spoink",14],["Groret",14],["Spinda",1],["Kraknoix",5],["Vibraninf",5,16],["Libégon",5,16],["Cacnea",12],["Cacturne",12,17],["Tylton",1,3],["Altaria",16,3],["Mangriff",1],["Séviper",4],["Séléroc",6,14],["Solaroc",6,14],["Barloche",11,5],["Barbicha",11,5],["Écrapince",11],["Colhomard",11,17],["Balbuto",5,14],["Kaorine",5,14],["Lilia",6,12],["Vacilys",6,12],["Anorith",6,7],["Armaldo",6,7],["Barpau",11],["Milobellus",11],["Morphéo",1],["Kecleon",1],["Polichombr",8],["Branette",8],["Skelénox",8],["Téraclope",8],["Tropius",12,3],["Éoko",14],["Absol",17],["Okéoké",14],["Stalgamin",15],["Oniglali",15],["Obalie",15,11],["Phogleur",15,11],["Kaimorse",15,11],["Coquiperl",11],["Serpang",11],["Rosabyss",11],["Relicanth",11,6],["Lovdisc",11],["Draby",16],["Drackhaus",16],["Drattak",16,3],["Terhal",9,14],["Métang",9,14],["Métalosse",9,14],["Regirock",6],["Regice",15],["Registeel",9],["Latias",16,14],["Latios",16,14],["Kyogre",11],["Groudon",5],["Rayquaza",16,3],["Jirachi",9,14],["Deoxys",14],["Tortipouss",12],["Boskara",12],["Torterra",12,5],["Ouisticram",10],["Chimpenfeu",10,2],["Simiabraz",10,2],["Tiplouf",11],["Prinplouf",11],["Pingoléon",11,9],["Étourmi",1,3],["Étourvol",1,3],["Étouraptor",1,3],["Keunotor",1],["Castorno",1,11],["Crikzik",7],["Mélokrik",7],["Lixy",13],["Luxio",13],["Luxray",13],["Rozbouton",12,4],["Roserade",12,4],["Kranidos",6],["Charkos",6],["Dinoclier",6,9],["Bastiodon",6,9],["Cheniti",7],["Cheniselle",7,12],["Papilord",7,3],["Apitrini",7,3],["Apireine",7,3],["Pachirisu",13],["Mustébouée",11],["Mustéflott",11],["Ceribou",12],["Ceriflor",12],["Sancoki",11],["Tritosor",11,5],["Capidextre",1],["Baudrive",8,3],["Grodrive",8,3],["Laporeille",1],["Lockpin",1],["Magirêve",8],["Corboss",17,3],["Chaglam",1],["Chaffreux",1],["Korillon",14],["Moufouette",4,17],["Moufflair",4,17],["Archéomire",9,14],["Archéodong",9,14],["Manzaï",6],["Mime Jr.",14,18],["Ptiravi",1],["Pijako",1,3],["Spiritomb",8,17],["Griknot",16,5],["Carmache",16,5],["Carchacrok",16,5],["Goinfrex",1],["Riolu",2],["Lucario",2,9],["Hippopotas",5],["Hippodocus",5],["Rapion",4,7],["Drascore",4,17],["Cradopaud",4,2],["Coatox",4,2],["Vortente",12],["Écayon",11],["Luminéon",11],["Babimanta",11,3],["Blizzi",12,15],["Blizzaroi",12,15],["Dimoret",17,15],["Magnézone",13,9],["Coudlangue",1],["Rhinastoc",5,6],["Bouldeneu",12],["Élekable",13],["Maganon",10],["Togekiss",18,3],["Yanmega",7,3],["Phyllali",12],["Givrali",15],["Scorvol",5,3],["Mammochon",15,5],["Porygon-Z",1],["Gallame",14,2],["Tarinorme",6,9],["Noctunoir",8],["Momartik",15,8],["Motisma",13,8],["Créhelf",14],["Créfollet",14],["Créfadet",14],["Dialga",9,16],["Palkia",11,16],["Heatran",10,9],["Regigigas",1],["Giratina",8,16],["Cresselia",14],["Phione",11],["Manaphy",11],["Darkrai",17],["Shaymin",12],["Arceus",1],["Victini",14,10],["Vipélierre",12],["Lianaja",12],["Majaspic",12],["Gruikui",10],["Grotichon",10,2],["Roitiflam",10,2],["Moustillon",11],["Mateloutre",11],["Clamiral",11],["Ratentif",1],["Miradar",1],["Ponchiot",1],["Ponchien",1],["Mastouffe",1],["Chacripan",17],["Léopardus",17],["Feuillajou",12],["Feuiloutan",12],["Flamajou",10],["Flamoutan",10],["Flotajou",11],["Flotoutan",11],["Munna",14],["Mushana",14],["Poichigeon",1,3],["Colombeau",1,3],["Déflaisan",1,3],["Zébibron",13],["Zéblitz",13],["Nodulithe",6],["Géolithe",6],["Gigalithe",6],["Chovsourir",14,3],["Rhinolove",14,3],["Rototaupe",5],["Minotaupe",5,9],["Nanméouïe",1],["Charpenti",2],["Ouvrifier",2],["Bétochef",2],["Tritonde",11],["Batracné",11,5],["Crapustule",11,5],["Judokrak",2],["Karaclée",2],["Larveyette",7,12],["Couverdure",7,12],["Manternel",7,12],["Venipatte",7,4],["Scobolide",7,4],["Brutapode",7,4],["Doudouvet",12,18],["Farfaduvet",12,18],["Chlorobule",12],["Fragilady",12],["Bargantua",11],["Mascaïman",5,17],["Escroco",5,17],["Crocorible",5,17],["Darumarond",10],["Darumacho",10],["Maracachi",12],["Crabicoque",7,6],["Crabaraque",7,6],["Baggiguane",17,2],["Baggaïd",17,2],["Cryptéro",14,3],["Tutafeh",8],["Tutankafer",8],["Carapagos",11,6],["Mégapagos",11,6],["Arkéapti",6,3],["Aéroptéryx",6,3],["Miamiasme",4],["Miasmax",4],["Zorua",17],["Zoroark",17],["Chinchidou",1],["Pashmilla",1],["Scrutella",14],["Mesmérella",14],["Sidérella",14],["Nucléos",14],["Méios",14],["Symbios",14],["Couaneton",11,3],["Lakmécygne",11,3],["Sorbébé",15],["Sorboul",15],["Sorbouboul",15],["Vivaldaim",1,12],["Haydaim",1,12],["Emolga",13,3],["Carabing",7],["Lançargot",7,9],["Trompignon",12,4],["Gaulet",12,4],["Viskuse",11,8],["Moyade",11,8],["Mamanbo",11],["Statitik",7,13],["Mygavolt",7,13],["Grindur",12,9],["Noacier",12,9],["Tic",9],["Clic",9],["Cliticlic",9],["Anchwatt",13],["Lampéroie",13],["Ohmassacre",13],["Lewsor",14],["Neitram",14],["Funécire",8,10],["Mélancolux",8,10],["Lugulabre",8,10],["Coupenotte",16],["Incisache",16],["Tranchodon",16],["Polarhume",15],["Polagriffe",15],["Hexagel",15],["Escargaume",7],["Limaspeed",7],["Limonde",5,13],["Kungfouine",2],["Shaofouine",2],["Drakkarmin",16],["Gringolem",5,8],["Golemastoc",5,8],["Scalpion",17,9],["Scalproie",17,9],["Frison",1],["Furaiglon",1,3],["Gueriaigle",1,3],["Vostourno",17,3],["Vaututrice",17,3],["Aflamanoir",10],["Fermite",7,9],["Solochi",17,16],["Diamat",17,16],["Trioxhydre",17,16],["Pyronille",7,10],["Pyrax",7,10],["Cobaltium",9,2],["Terrakium",6,2],["Viridium",12,2],["Boréas",3],["Fulguris",13,3],["Reshiram",16,10],["Zekrom",16,13],["Démétéros",5,3],["Kyurem",16,15],["Keldeo",11,2],["Meloetta",1,14],["Genesect",7,9],["Marisson",12],["Boguérisse",12],["Blindépique",12,2],["Feunnec",10],["Roussil",10],["Goupelin",10,14],["Grenousse",11],["Croâporal",11],["Amphinobi",11,17],["Sapereau",1],["Excavarenne",1,5],["Passerouge",1,3],["Braisillon",10,3],["Flambusard",10,3],["Lépidonille",7],["Pérégrain",7],["Prismillon",7,3],["Hélionceau",10,1],["Némélios",10,1],["Flabébé",18],["Floette",18],["Florges",18],["Cabriolaine",12],["Chevroum",12],["Pandespiègle",2],["Pandarbare",2,17],["Couafarel",1],["Psystigri",14],["Mistigrix",14],["Monorpale",9,8],["Dimoclès",9,8],["Exagide",9,8],["Fluvetin",18],["Cocotine",18],["Sucroquin",18],["Cupcanaille",18],["Sepiatop",17,14],["Sepiatroce",17,14],["Opermine",6,11],["Golgopathe",6,11],["Venalgue",4,11],["Kravarech",4,16],["Flingouste",11],["Gamblast",11],["Galvaran",13,1],["Iguolta",13,1],["Ptyranidur",6,16],["Rexillius",6,16],["Amagara",6,15],["Dragmara",6,15],["Nymphali",18],["Brutalibré",2,3],["Dedenne",13,18],["Strassie",6,18],["Mucuscule",16],["Colimucus",16],["Muplodocus",16],["Trousselin",9,18],["Brocélôme",8,12],["Desséliande",8,12],["Pitrouille",8,12],["Banshitrouye",8,12],["Grelaçon",15],["Séracrawl",15],["Sonistrelle",3,16],["Bruyverne",3,16],["Xerneas",18],["Yveltal",17,3],["Zygarde",16,5],["Diancie",6,18],["Hoopa",14,8],["Volcanion",10,11],["Brindibou",12,3],["Efflèche",12,3],["Archéduc",12,8],["Flamiaou",10],["Matoufeu",10],["Félinferno",10,17],["Otaquin",11],["Otarlette",11],["Oratoria",11,18],["Picassaut",1,3],["Piclairon",1,3],["Bazoucan",1,3],["Manglouton",1],["Argouste",1],["Larvibule",7],["Chrysapile",7,13],["Lucanon",7,13],["Crabagarre",2],["Crabominable",2,15],["Plumeline",10,3],["Bombydou",7,18],["Rubombelle",7,18],["Rocabot",6],["Lougaroc",6],["Froussardine",11],["Vorastérie",4,11],["Prédastérie",4,11],["Tiboudet",5],["Bourrinos",5],["Araqua",11,7],["Tarenbulle",11,7],["Mimantis",12],["Floramantis",12],["Spododo",12,18],["Lampignon",12,18],["Tritox",4,10],["Malamandre",4,10],["Nounourson",1,2],["Chelours",1,2],["Croquine",12],["Candine",12],["Sucreine",12],["Guérilande",18],["Gouroutan",1,14],["Quartermac",2],["Sovkipou",7,11],["Sarmuraï",7,11],["Bacabouh",8,5],["Trépassable",8,5],["Concombaffe",11],["Type:0",1],["Silvallié",1],["Météno",6,3],["Dodoala",1],["Boumata",10,16],["Togedemaru",13,9],["Mimiqui",8,18],["Denticrisse",11,14],["Draïeul",1,16],["Sinistrail",8,12],["Bébécaille",16],["Écaïd",16,2],["Ékaïser",16,2],["Tokorico",13,18],["Tokopiyon",14,18],["Tokotoro",12,18],["Tokopisco",11,18],["Cosmog",14],["Cosmovum",14],["Solgaleo",14,9],["Lunala",14,8],["Zéroïd",6,4],["Mouscoto",7,2],["Cancrelove",7,2],["Câblifère",13],["Bamboiselle",9,3],["Katagami",12,9],["Engloutyran",17,16],["Necrozma",14],["Magearna",9,18],["Marshadow",2,8],["Vémini",4],["Mandrillon",4,16],["Ama-Ama",6,9],["Pierroteknik",10,8],["Zeraora",13],["Meltan",9],["Melmetal",9],["Ouistempo",12],["Badabouin",12],["Gorythmic",12],["Flambino",10],["Lapyro",10],["Pyrobut",10],["Larméléon",11],["Arrozard",11],["Lézargus",11],["Rongourmand",1],["Rongrigou",1],["Minisange",3],["Bleuseille",3],["Corvaillus",3,9],["Larvadar",7],["Coléodôme",7,14],["Astronelle",7,14],["Goupilou",17],["Roublenard",17],["Tournicoton",12],["Blancoton",12],["Moumouton",1],["Moumouflon",1],["Khélocrok",11],["Torgamord",11,6],["Voltoutou",13],["Fulgudog",13],["Charbi",6],["Wagomine",6,10],["Monthracite",6,10],["Verpom",12,16],["Pomdrapi",12,16],["Dratatin",12,16],["Dunaja",5],["Dunaconda",5],["Nigosier",3,11],["Embrochet",11],["Hastacuda",11],["Toxizap",13,4],["Salarsen",13,4],["Grillepattes",10,7],["Scolocendre",10,7],["Poulpaf",2],["Krakos",2],["Théffroi",8],["Polthégeist",8],["Bibichut",14],["Chapotus",14],["Sorcilence",14,18],["Grimalin",17,18],["Fourbelin",17,18],["Angoliath",17,18],["Ixon",17,1],["Berserkatt",9],["Corayôme",8],["Palarticho",2],["M. Glaquette",15,14],["Tutétékri",5,8],["Crèmy",18],["Charmilly",18],["Hexadron",2],["Wattapik",13],["Frissonille",15,7],["Beldeneige",15,7],["Dolman",6],["Bekaglaçon",15],["Wimessir",14,1],["Morpeko",13,17],["Charibari",9],["Pachyradjah",9],["Galvagon",13,16],["Galvagla",13,15],["Hydragon",11,16],["Hydragla",11,15],["Duralugon",9,16],["Fantyrm",16,8],["Dispareptil",16,8],["Lanssorien",16,8],["Zacian",18],["Zamazenta",2],["Éthernatos",4,16],["Wushours",2],["Shifours",2,17],["Zarude",17,12],["Regieleki",13],["Regidrago",16],["Blizzeval",15],["Spectreval",8],["Sylveroy",14,12],["Cerbyllin",1,14],["Hachécateur",7,6],["Ursaking",5,1],["Paragruel",11,8],["Farfurex",2,4],["Qwilpik",17,4],["Amovénus",18,3],["Poussacha",12],["Matourgeon",12],["Miascarade",12,17],["Chochodile",10],["Crocogril",10],["Flâmigator",10,8],["Coiffeton",11],["Canarbello",11],["Palmaval",11,2],["Gourmelet",1],["Fragroin",1],["Tissenboule",7],["Filentrappe",7],["Lilliterelle",7],["Gambex",7,17],["Pohm",13],["Pohmotte",13,2],["Pohmarmotte",13,2],["Compagnol",1],["Famignol",1],["Pâtachiot",18],["Briochien",18],["Olivini",12,1],["Olivado",12,1],["Arboliva",12,1],["Tapatoès",1,3],["Selutin",6],["Amassel",6],["Gigansel",6],["Charbambin",10],["Carmadura",10,14],["Malvalame",10,8],["Têtampoule",13],["Ampibidou",13],["Zapétrel",13,3],["Fulgulairo",13,3],["Grondogue",17],["Dogrino",17],["Gribouraigne",4,1],["Tag-Tag",4,1],["Virovent",12,8],["Virevorreur",12,8],["Terracool",5,12],["Terracruel",5,12],["Craparoi",6],["Pimito",12],["Scovilain",12,10],["Léboulérou",7],["Bérasca",7,14],["Flotillon",14],["Cléopsytra",14],["Forgerette",18,9],["Forgella",18,9],["Forgelina",18,9],["Taupikeau",11],["Triopikeau",11],["Lestombaile",3,17],["Dofin",11],["Superdofin",11],["Vrombi",9,4],["Vrombotor",9,4],["Motorizard",16,1],["Ferdeter",9],["Germéclat",6,4],["Floréclat",6,4],["Toutombe",8],["Tomberro",8],["Flamenroule",3,2],["Piétacé",15],["Balbalèze",15],["Délestin",11,14],["Oyacata",11],["Nigirigon",16,11],["Courrousinge",2,8],["Terraiste",4,5],["Farigiraf",1,14],["Deusolourdo",1],["Scalpereur",17,9],["Fort-Ivoire",5,2],["Hurle-Queue",18,14],["Fongus-Furie",12,17],["Flotte-Mèche",8,18],["Rampe-Ailes",7,2],["Pelage-Sablé",13,5],["Roue-de-Fer",5,9],["Hotte-de-Fer",15,11],["Paume-de-Fer",2,13],["Têtes-de-Fer",17,3],["Mite-de-Fer",10,4],["Épine-de-Fer",6,13],["Frigodo",16,15],["Cryodo",16,15],["Glaivodo",16,15],["Mordudor",8],["Gromago",9,8],["Chongjian",17,12],["Baojian",17,15],["Dinglu",17,5],["Yuyu",17,10],["Rugit-Lune",16,17],["Garde-de-Fer",18,2],["Koraidon",2,16],["Miraidon",13,16],["Serpente-Eau",11,16],["Vert-de-Fer",12,14],["Pomdramour",12,16],["Poltchageist",12,8],["Théffroyable",12,8],["Félicanis",4,2],["Fortusimia",4,14],["Favianos",4,18],["Ogerpon",12],["Pondralugon",9,16],["Pomdorochi",12,16],["Feu-Perçant",10,16],["Ire-Foudre",13,16],["Roc-de-Fer",6,14],["Chef-de-Fer",9,14],["Terapagos",1],["Pêchaminus",4,8]];
+
+const TYPES = {
+  1:["Normal","#a8a77a"], 2:["Combat","#c22e28"], 3:["Vol","#a98ff3"], 4:["Poison","#a33ea1"],
+  5:["Sol","#e2bf65"], 6:["Roche","#b6a136"], 7:["Insecte","#a6b91a"], 8:["Spectre","#735797"],
+  9:["Acier","#b7b7ce"], 10:["Feu","#ee8130"], 11:["Eau","#6390f0"], 12:["Plante","#7ac74c"],
+  13:["Électrik","#e0c018"], 14:["Psy","#f95587"], 15:["Glace","#96d9d6"], 16:["Dragon","#6f35fc"],
+  17:["Ténèbres","#705746"], 18:["Fée","#d685ad"], 19:["Stellaire","#40b5a5"]
+};
+
+const GENS = [
+  {g:1, region:"Kanto",   from:1,   to:151},
+  {g:2, region:"Johto",   from:152, to:251},
+  {g:3, region:"Hoenn",   from:252, to:386},
+  {g:4, region:"Sinnoh",  from:387, to:493},
+  {g:5, region:"Unys",    from:494, to:649},
+  {g:6, region:"Kalos",   from:650, to:721},
+  {g:7, region:"Alola",   from:722, to:809},
+  {g:8, region:"Galar",   from:810, to:905},
+  {g:9, region:"Paldea",  from:906, to:1025}
+];
+
+const SCALE = [-10,-5,-3,-1,0,1,3,5,10];
+// la troisième valeur répète la couleur en dur : le canvas de l'export ne lit pas le CSS
+const TIERS = [["S","--tS","#ff7f7f"],["A","--tA","#ffbf7f"],["B","--tB","#ffdf7f"],
+               ["C","--tC","#ffff7f"],["D","--tD","#bfff7f"],["E","--tE","#7fffff"],["F","--tF","#cf9fff"]];
+
+/* Formes alternatives : [id, id de l'espèce, nom, type1, type2, génération d'introduction]
+   Uniquement les formes qui sont un autre Pokémon aux yeux du joueur : Méga-Évolutions,
+   Gigamax, formes régionales (Alola, Galar, Hisui, Paldéa) et les deux Primo-Résurgences.
+   Tout ce qui n'était qu'une variante du même Pokémon sous un nom voisin — formes de combat,
+   variantes de genre ou de couleur, casquettes de Pikachu, formes Totem — est écarté. */
+const FORMS_RAW = [[10033,3,"Méga-Florizarre",12,4,6],[10195,3,"Florizarre Gigamax",12,4,8],[10034,6,"Méga-Dracaufeu X",10,16,6],[10035,6,"Méga-Dracaufeu Y",10,3,6],[10196,6,"Dracaufeu Gigamax",10,3,8],[10036,9,"Méga-Tortank",11,null,6],[10197,9,"Tortank Gigamax",11,null,8],[10198,12,"Papilusion Gigamax",7,3,8],[10090,15,"Méga-Dardargnan",7,4,6],[10073,18,"Méga-Roucarnage",1,3,6],[10091,19,"Rattata d’Alola",17,1,7],[10092,20,"Rattatac d’Alola",17,1,7],[10199,25,"Pikachu Gigamax",13,null,8],[10100,26,"Raichu d’Alola",13,14,7],[10304,26,"Méga-Raichu X",13,null,9],[10305,26,"Méga-Raichu Y",13,null,9],[10101,27,"Sabelette d’Alola",15,9,7],[10102,28,"Sablaireau d’Alola",15,9,7],[10278,36,"Méga-Mélodelfe",18,3,9],[10103,37,"Goupix d’Alola",15,null,7],[10104,38,"Feunard d’Alola",15,18,7],[10105,50,"Taupiqueur d’Alola",5,9,7],[10106,51,"Triopikeur d’Alola",5,9,7],[10107,52,"Miaouss d’Alola",17,null,7],[10161,52,"Miaouss de Galar",9,null,8],[10200,52,"Miaouss Gigamax",1,null,8],[10108,53,"Persian d’Alola",17,null,7],[10229,58,"Caninos de Hisui",10,6,8],[10230,59,"Arcanin de Hisui",10,6,8],[10037,65,"Méga-Alakazam",14,null,6],[10201,68,"Mackogneur Gigamax",2,null,8],[10279,71,"Méga-Empiflor",12,4,9],[10109,74,"Racaillou d’Alola",6,13,7],[10110,75,"Gravalanch d’Alola",6,13,7],[10111,76,"Grolem d’Alola",6,13,7],[10162,77,"Ponyta de Galar",14,null,8],[10163,78,"Galopa de Galar",14,18,8],[10164,79,"Ramoloss de Galar",14,null,8],[10071,80,"Méga-Flagadoss",11,14,6],[10165,80,"Flagadoss de Galar",4,14,8],[10166,83,"Canarticho de Galar",2,null,8],[10112,88,"Tadmorv d’Alola",4,17,7],[10113,89,"Grotadmorv d’Alola",4,17,7],[10038,94,"Méga-Ectoplasma",8,4,6],[10202,94,"Ectoplasma Gigamax",8,4,8],[10203,99,"Krabboss Gigamax",11,null,8],[10231,100,"Voltorbe de Hisui",13,12,8],[10232,101,"Électrode de Hisui",13,12,8],[10114,103,"Noadkoko d’Alola",12,16,7],[10115,105,"Ossatueur d’Alola",10,8,7],[10167,110,"Smogogo de Galar",4,18,8],[10039,115,"Méga-Kangourex",1,null,6],[10280,121,"Méga-Staross",11,14,9],[10168,122,"M. Mime de Galar",15,14,8],[10040,127,"Méga-Scarabrute",7,3,6],[10250,128,"Tauros de Paldéa Race Combative",2,null,9],[10251,128,"Tauros de Paldéa Race Flamboyante",2,10,9],[10252,128,"Tauros de Paldéa Race Aquatique",2,11,9],[10041,130,"Méga-Léviator",11,17,6],[10204,131,"Lokhlass Gigamax",11,15,8],[10205,133,"Évoli Gigamax",1,null,8],[10042,142,"Méga-Ptéra",6,3,6],[10206,143,"Ronflex Gigamax",1,null,8],[10169,144,"Artikodin de Galar",14,3,8],[10170,145,"Électhor de Galar",2,3,8],[10171,146,"Sulfura de Galar",17,3,8],[10281,149,"Méga-Dracolosse",16,3,9],[10043,150,"Méga-Mewtwo X",14,2,6],[10044,150,"Méga-Mewtwo Y",14,null,6],[10282,154,"Méga-Méganium",12,18,9],[10233,157,"Typhlosion de Hisui",10,8,8],[10283,160,"Méga-Aligatueur",11,16,9],[10045,181,"Méga-Pharamp",13,16,6],[10253,194,"Axoloto de Paldéa",4,5,9],[10172,199,"Roigada de Galar",4,14,8],[10072,208,"Méga-Steelix",9,5,6],[10234,211,"Qwilfish de Hisui",17,4,8],[10046,212,"Méga-Cizayox",7,9,6],[10047,214,"Méga-Scarhino",7,2,6],[10235,215,"Farfuret de Hisui",2,4,8],[10173,222,"Corayon de Galar",8,null,8],[10284,227,"Méga-Airmure",9,3,9],[10048,229,"Méga-Démolosse",17,10,6],[10049,248,"Méga-Tyranocif",6,17,6],[10065,254,"Méga-Jungko",12,16,6],[10050,257,"Méga-Braségali",10,2,6],[10064,260,"Méga-Laggron",11,5,6],[10174,263,"Zigzaton de Galar",17,1,8],[10175,264,"Linéon de Galar",17,1,8],[10051,282,"Méga-Gardevoir",14,18,6],[10066,302,"Méga-Ténéfix",17,8,6],[10052,303,"Méga-Mysdibule",9,18,6],[10053,306,"Méga-Galeking",9,null,6],[10054,308,"Méga-Charmina",2,14,6],[10055,310,"Méga-Élecsprint",13,null,6],[10070,319,"Méga-Sharpedo",11,17,6],[10087,323,"Méga-Camérupt",10,5,6],[10067,334,"Méga-Altaria",16,18,6],[10056,354,"Méga-Branette",8,null,6],[10306,358,"Méga-Éoko",14,9,9],[10057,359,"Méga-Absol",17,null,6],[10307,359,"Méga-Absol Z",17,8,9],[10074,362,"Méga-Oniglali",15,null,6],[10089,373,"Méga-Drattak",16,3,6],[10076,376,"Méga-Métalosse",9,14,6],[10062,380,"Méga-Latias",16,14,6],[10063,381,"Méga-Latios",16,14,6],[10077,382,"Primo-Kyogre",11,null,6],[10078,383,"Primo-Groudon",5,10,6],[10079,384,"Méga-Rayquaza",16,3,6],[10308,398,"Méga-Étouraptor",2,3,9],[10088,428,"Méga-Lockpin",1,2,6],[10058,445,"Méga-Carchacrok",16,5,6],[10309,445,"Méga-Carchacrok Z",16,null,9],[10059,448,"Méga-Lucario",2,9,6],[10310,448,"Méga-Lucario Z",2,9,9],[10060,460,"Méga-Blizzaroi",12,15,6],[10068,475,"Méga-Gallame",14,2,6],[10285,478,"Méga-Momartik",15,8,9],[10311,485,"Méga-Heatran",10,9,9],[10312,491,"Méga-Darkrai",17,null,9],[10286,500,"Méga-Roitiflam",10,2,9],[10236,503,"Clamiral de Hisui",11,17,8],[10287,530,"Méga-Minotaupe",5,9,9],[10069,531,"Méga-Nanméouïe",1,18,6],[10288,545,"Méga-Brutapode",7,4,9],[10237,549,"Fragilady de Hisui",12,2,8],[10176,554,"Darumarond de Galar",15,null,8],[10177,555,"Darumacho de Galar Normal",15,null,8],[10178,555,"Darumacho de Galar Transe",15,10,8],[10289,560,"Méga-Baggaïd",17,2,9],[10179,562,"Tutafeh de Galar",5,8,8],[10207,569,"Miasmax Gigamax",4,null,8],[10238,570,"Zorua de Hisui",1,8,8],[10239,571,"Zoroark de Hisui",1,8,8],[10290,604,"Méga-Ohmassacre",13,null,9],[10291,609,"Méga-Lugulabre",8,10,9],[10180,618,"Limonde de Galar",5,9,8],[10313,623,"Méga-Golemastoc",5,8,9],[10240,628,"Gueriaigle de Hisui",14,3,8],[10292,652,"Méga-Blindépique",12,2,9],[10293,655,"Méga-Goupelin",10,14,9],[10294,658,"Méga-Amphinobi",11,17,9],[10295,668,"Méga-Némélios",10,1,9],[10296,670,"Méga-Floette",18,null,9],[10314,678,"Méga-Mistigrix",14,null,9],[10297,687,"Méga-Sepiatroce",17,14,9],[10298,689,"Méga-Golgopathe",6,2,9],[10299,691,"Méga-Kravarech",4,16,9],[10300,701,"Méga-Brutalibré",2,3,9],[10241,705,"Colimucus de Hisui",9,16,8],[10242,706,"Muplodocus de Hisui",9,16,8],[10243,713,"Séracrawl de Hisui",15,6,8],[10301,718,"Méga-Zygarde",16,5,9],[10075,719,"Méga-Diancie",6,18,6],[10244,724,"Archéduc de Hisui",12,2,8],[10315,740,"Méga-Crabominable",2,15,9],[10316,768,"Méga-Sarmuraï",7,9,9],[10302,780,"Méga-Draïeul",1,16,9],[10317,801,"Méga-Magearna",9,18,9],[10318,801,"Méga-Magearna Couleur du Passé",9,18,9],[10319,807,"Méga-Zeraora",13,null,9],[10208,809,"Melmetal Gigamax",9,null,8],[10209,812,"Gorythmic Gigamax",12,null,8],[10210,815,"Pyrobut Gigamax",10,null,8],[10211,818,"Lézargus Gigamax",11,null,8],[10212,823,"Corvaillus Gigamax",3,9,8],[10213,826,"Astronelle Gigamax",7,14,8],[10214,834,"Torgamord Gigamax",11,6,8],[10215,839,"Monthracite Gigamax",6,10,8],[10216,841,"Pomdrapi Gigamax",12,16,8],[10217,842,"Dratatin Gigamax",12,16,8],[10218,844,"Dunaconda Gigamax",5,null,8],[10219,849,"Salarsen Gigamax",13,4,8],[10220,851,"Scolocendre Gigamax",10,7,8],[10221,858,"Sorcilence Gigamax",14,18,8],[10222,861,"Angoliath Gigamax",17,18,8],[10223,869,"Charmilly Gigamax",18,null,8],[10303,870,"Méga-Hexadron",2,null,9],[10224,879,"Pachyradjah Gigamax",9,null,8],[10225,884,"Duralugon Gigamax",9,16,8],[10226,892,"Shifours Style Poing Final Gigamax",2,17,8],[10227,892,"Shifours Style Mille Poings Gigamax",2,11,8],[10320,952,"Méga-Scovilain",12,10,9],[10321,970,"Méga-Floréclat",6,4,9],[10322,978,"Méga-Nigirigon",16,11,9],[10325,998,"Méga-Glaivodo",16,15,9]];
+
+function genOfId(id){ const g = GENS.find(g => id >= g.from && id <= g.to); return g ? g.g : 0; }
+
+const POKE = [];
+POKE_RAW.forEach((r, i) => {
+  const id = i + 1, g = genOfId(id);
+  POKE.push({ id, spid:id, name:r[0], t1:r[1], t2:r[2] || 0, gi:g, go:g, form:false });
+});
+FORMS_RAW.forEach(r => {
+  POKE.push({ id:r[0], spid:r[1], name:r[2], t1:r[3], t2:r[4] || 0, gi:r[5], go:genOfId(r[1]), form:true });
+});
+// chaque forme se range juste après le Pokémon dont elle est issue
+POKE.sort((a, b) => a.spid - b.spid || a.id - b.id);
+POKE.forEach(p => p.key = norm(p.name));
+
+const VALID_IDS = new Set(POKE.map(p => p.id));
+const BASE_COUNT = POKE_RAW.length, FORM_COUNT = FORMS_RAW.length;
+
+/* Une forme peut être rattachée à deux générations différentes, et les deux se défendent :
+     "intro"  — celle qui l'a fait apparaître (Méga-Dracaufeu → 6G, Miaouss de Galar → 8G)
+     "origin" — celle du Pokémon d'origine   (Méga-Dracaufeu → 1G, Miaouss de Galar → 1G)
+   Le choix se fait dans la page Résultats et rejoue tous les classements. */
+let genMode = "intro";
+function genOf(p){ return genMode === "origin" ? p.go : p.gi; }
+
+let withForms = true;                     // les formes comptent-elles dans la notation ?
+function inScope(p){ return withForms || !p.form; }
+
+let tourney = null;                       // tournoi en cours, voir la vue « Duel »
+
+function norm(s){ return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""); }
+/* Les images passent par jsDelivr plutôt que par GitHub en direct : ce sont les mêmes
+   fichiers, mais servis par un vrai réseau de diffusion. GitHub déconseille l'accès direct
+   et le limite en débit, ce qui casserait le site dès qu'il y a du monde. */
+function sprite(id){ return `https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/${id}.png`; }
+function art(id){ return `https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/other/official-artwork/${id}.png`; }
+function sign(v){ return v < 0 ? "-" : v > 0 ? "+" : "0"; }
+
+// texte noir ou blanc selon la clarté du fond : sans ça, « Glace » et « Acier » sont illisibles
+function textOn(hex){
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return (0.299*r + 0.587*g + 0.114*b) > 150 ? "#16161a" : "#ffffff";
+}
+
+/* ==================================================================
+   SAUVEGARDE
+   Trois couches, écrites à chaque note, de la plus discrète à la plus sûre :
+     1. localStorage — instantané et synchrone, survit même à une fermeture brutale
+     2. IndexedDB    — filet de sécurité si localStorage est plein, vidé ou refusé
+     3. un vrai fichier .json sur le disque — optionnel, Chrome/Edge uniquement
+   Au retour sur le site, on relit les deux premières et on garde la plus récente.
+================================================================== */
+const KEY = "pokemon-tierlist.v1";
+const DB_NAME = "pokemon-tierlist", DB_STORE = "kv";
+
+let notes = {};          // { id: points }
+let localOk = true, idbOk = true;
+
+function snapshot(){
+  return { app:"pokemon-tierlist", version:3, updated:Date.now(), notes,
+           settings:{ genMode, withForms }, tourney };
+}
+
+// un tournoi relu depuis le disque peut venir d'une version antérieure : on le vérifie
+function applyTourney(t){
+  if (!t || !Array.isArray(t.ids) || t.ids.length < 2) return;
+  if (t.ids.length & (t.ids.length - 1)) return;            // pas une puissance de deux
+  // null = place vide (exemption) ; tout le reste doit être un Pokémon qui existe encore
+  if (!t.ids.every(id => id === null || VALID_IDS.has(id))) return;
+  if (t.ids.filter(id => id !== null).length < 2) return;
+  tourney = { size:t.ids.length, ids:t.ids, results:Array.isArray(t.results) ? t.results : [] };
+}
+// les réglages suivent le même chemin que les notes, donc ils survivent aussi au rechargement
+function saveSettings(){ save(); flush(); }
+function applySettings(s){
+  if (!s) return;
+  if (s.genMode === "intro" || s.genMode === "origin") genMode = s.genMode;
+  if (typeof s.withForms === "boolean"){
+    withForms = s.withForms;
+    const box = document.getElementById("withForms");
+    if (box) box.checked = withForms;
+  }
+}
+
+// n'accepte que des identifiants et des montants valides (fichier importé, données abîmées…)
+function sanitize(raw){
+  const clean = {};
+  if (!raw || typeof raw !== "object") return clean;
+  for (const k in raw){
+    const id = +k, v = +raw[k];
+    if (VALID_IDS.has(id) && SCALE.includes(v)) clean[id] = v;
+  }
+  return clean;
+}
+
+/* ---------- couche 1 : localStorage (synchrone) ---------- */
+let localUpdated = 0;
+try {
+  const raw = JSON.parse(localStorage.getItem(KEY));
+  if (raw){
+    notes = sanitize(raw.notes || raw);   // le format initial était un simple { id: points }
+    localUpdated = raw.updated || 0;
+    applySettings(raw.settings);
+    applyTourney(raw.tourney);
+  }
+} catch(e){ notes = {}; }
+
+/* ---------- couche 2 : IndexedDB ---------- */
+let dbPromise = null;
+function db(){
+  if (!dbPromise) dbPromise = new Promise((res, rej) => {
+    const r = indexedDB.open(DB_NAME, 1);
+    r.onupgradeneeded = () => r.result.createObjectStore(DB_STORE);
+    r.onsuccess = () => res(r.result);
+    r.onerror   = () => rej(r.error);
+  });
+  return dbPromise;
+}
+async function idbGet(k){
+  const d = await db();
+  return new Promise((res, rej) => {
+    const q = d.transaction(DB_STORE, "readonly").objectStore(DB_STORE).get(k);
+    q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error);
+  });
+}
+async function idbSet(k, v){
+  const d = await db();
+  return new Promise((res, rej) => {
+    const t = d.transaction(DB_STORE, "readwrite");
+    t.objectStore(DB_STORE).put(v, k);
+    t.oncomplete = () => res(); t.onerror = () => rej(t.error);
+  });
+}
+
+/* ---------- couche 3 : fichier sur le disque ---------- */
+const canFile = typeof window.showSaveFilePicker === "function";
+let fileHandle = null, fileOk = false;
+
+async function writeFile(){
+  if (!fileHandle || !fileOk) return;
+  const w = await fileHandle.createWritable();
+  await w.write(JSON.stringify(snapshot(), null, 1));
+  await w.close();
+}
+
+async function linkFile(){
+  try {
+    fileHandle = await showSaveFilePicker({
+      suggestedName: "mes-notes-pokemon.json",
+      types: [{ description:"Notes Pokémon", accept:{ "application/json":[".json"] } }]
+    });
+    fileOk = true;
+    await writeFile();
+    await idbSet("fileHandle", fileHandle);
+    setSaveState("ok"); renderFileLine();
+  } catch(e){ /* l'utilisateur a annulé */ }
+}
+
+async function unlinkFile(){
+  fileHandle = null; fileOk = false;
+  try { await idbSet("fileHandle", null); } catch(e){}
+  renderFileLine();
+}
+
+async function reconnectFile(){
+  if (!fileHandle) return;
+  try {
+    const p = await fileHandle.requestPermission({ mode:"readwrite" });
+    fileOk = (p === "granted");
+  } catch(e){ fileOk = false; }
+  document.getElementById("notice").hidden = true;
+  if (fileOk) flush();
+  renderFileLine();
+}
+
+/* ---------- écriture ---------- */
+const saveEl = document.getElementById("saveState");
+let saveTimer = null;
+
+function setSaveState(s){
+  saveEl.dataset.s = s;
+  saveEl.textContent = s === "saving" ? "sauvegarde…"
+                     : s === "fail"   ? "non sauvegardé"
+                     : fileOk ? "sauvegardé + fichier" : "sauvegardé";
+  document.getElementById("warn").hidden = (s !== "fail");
+}
+
+function save(){
+  // localStorage d'abord : c'est synchrone, donc déjà en sécurité si l'onglet se ferme
+  try { localStorage.setItem(KEY, JSON.stringify(snapshot())); localOk = true; }
+  catch(e){ localOk = false; }
+  setSaveState("saving");
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(flush, 500);   // les couches lentes attendent une pause dans les clics
+}
+
+async function flush(){
+  clearTimeout(saveTimer);
+  try { await idbSet("save", snapshot()); idbOk = true; } catch(e){ idbOk = false; }
+  try { await writeFile(); } catch(e){ fileOk = false; renderFileLine(); }
+  setSaveState(localOk || idbOk || fileOk ? "ok" : "fail");
+}
+
+// dernier passage quand on quitte, change d'onglet ou met le téléphone en veille
+addEventListener("pagehide", flush);
+addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flush(); });
+
+document.getElementById("warnExp").onclick = () => canFile ? linkFile() : doExport();
+document.getElementById("noticeBtn").onclick = () => reconnectFile();
+
+/* ---------- relecture au retour sur le site ---------- */
+async function restore(){
+  let stored = null;
+  try { stored = await idbGet("save"); } catch(e){ idbOk = false; }
+
+  if (stored && (stored.updated || 0) > localUpdated){
+    const n = sanitize(stored.notes);
+    if (Object.keys(n).length){
+      notes = n;
+      applySettings(stored.settings);
+      applyTourney(stored.tourney);
+      refreshProgress(); buildQueue(); rowsEl.innerHTML = ""; resDirty = true;
+      try { localStorage.setItem(KEY, JSON.stringify(snapshot())); } catch(e){}
+      setSaveState("ok");
+    }
+  }
+  if (!localOk && !idbOk) setSaveState("fail");
+
+  // le fichier lié : on ne peut le réutiliser que si la permission tient encore
+  try {
+    const h = await idbGet("fileHandle");
+    if (h){
+      fileHandle = h;
+      const p = await h.queryPermission({ mode:"readwrite" });
+      if (p === "granted"){ fileOk = true; setSaveState("ok"); }
+      else document.getElementById("notice").hidden = false;   // il faudra un clic
+      renderFileLine();
+    }
+  } catch(e){}
+}
+
+function setNote(id, v){
+  if (v === null) delete notes[id]; else notes[id] = v;
+  save(); refreshProgress();
+  const row = rowsEl.querySelector(`.row[data-id="${id}"]`);
+  if (row) paintRow(row, id);
+  if (current && current.id === id) paintStageScale();
+  resDirty = true;
+}
+
+/* ------------------------------------------------------------------
+   Barre de progression
+------------------------------------------------------------------ */
+const progEl = document.getElementById("prog");
+const progBar = document.getElementById("progbar");
+function refreshProgress(){
+  const scope = POKE.filter(inScope);
+  const n = scope.filter(p => notes[p.id] !== undefined).length;
+  progEl.textContent = `${n} / ${scope.length}`;
+  progBar.style.width = (n / scope.length * 100) + "%";
+}
+
+/* ------------------------------------------------------------------
+   Fabrique des boutons de note
+------------------------------------------------------------------ */
+function scaleHTML(id, size){
+  const cur = notes[id];
+  let h = `<div class="scale ${size}" data-id="${id}">`;
+  for (const v of SCALE){
+    h += `<button type="button" data-v="${v}" data-sign="${sign(v)}" data-sel="${cur === v ? 1 : 0}"`
+       + ` title="${v > 0 ? "+" + v : v} point${Math.abs(v) > 1 ? "s" : ""}">${v > 0 ? "+" + v : v}</button>`;
+  }
+  return h + "</div>";
+}
+// un clic sur un bouton déjà sélectionné retire la note
+function onScaleClick(e){
+  const b = e.target.closest(".scale button"); if (!b) return;
+  const id = +b.parentNode.dataset.id, v = +b.dataset.v;
+  const already = notes[id] === v;
+  setNote(id, already ? null : v);
+  return { id, v, already };
+}
+
+/* ------------------------------------------------------------------
+   VUE « NOTER »
+------------------------------------------------------------------ */
+const stage = document.getElementById("stage");
+const skipRated = document.getElementById("skipRated");
+const shuffleBox = document.getElementById("shuffle");
+const withFormsBox = document.getElementById("withForms");
+const genRate = document.getElementById("genRate");
+let queue = [], qi = 0, current = null;
+
+function seedOrder(){
+  // ordre aléatoire stable tant qu'on ne recoche pas la case
+  const a = POKE.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+let shuffled = null;
+
+let allRated = false;
+function buildQueue(keepId){
+  const base = shuffleBox.checked ? (shuffled || (shuffled = seedOrder())) : POKE;
+  const g = +genRate.value;
+  const keep = p => inScope(p) && (!g || genOf(p) === g);
+  queue = base.filter(p => keep(p) && (!skipRated.checked || notes[p.id] === undefined || p.id === keepId));
+  // plus rien à noter dans la sélection : on repasse sur tout pour pouvoir relire ses notes
+  allRated = !queue.length;
+  if (allRated) queue = base.filter(keep);
+  qi = keepId ? Math.max(0, queue.findIndex(p => p.id === keepId)) : 0;
+  drawStage();
+}
+
+function drawStage(){
+  if (!queue.length){ stage.innerHTML = `<div class="done">Aucun Pokémon dans cette sélection.</div>`; current = null; return; }
+  qi = (qi + queue.length) % queue.length;
+  const p = queue[qi]; current = p;
+  const g = genOf(p), gen = GENS[g - 1];
+  const types = [p.t1, p.t2].filter(Boolean)
+    .map(t => `<span class="type" style="background:${TYPES[t][1]};color:${textOn(TYPES[t][1])}">${TYPES[t][0]}</span>`).join("");
+  stage.innerHTML = `
+    ${allRated ? `<p class="allrated">Tout est noté dans cette sélection — tu revois tes notes.</p>` : ""}
+    <div class="art"><img src="${art(p.id)}" alt="${p.name}" onerror="this.onerror=null;this.src='${sprite(p.id)}'"></div>
+    <div class="pname">${p.name}${p.form ? `<span class="badge">forme</span>` : ""}</div>
+    <div class="pmeta">n°${String(p.spid).padStart(4,"0")} · Génération ${g} — ${gen.region}</div>
+    <div class="types">${types}</div>
+    ${scaleHTML(p.id, "big")}
+    <div class="stagenav">
+      <button data-nav="-1">← Précédent</button>
+      <span>${qi + 1} / ${queue.length}</span>
+      <button data-nav="1">Passer →</button>
+    </div>`;
+  // précharge l'image suivante
+  if (queue.length > 1){ const n = new Image(); n.src = art(queue[(qi + 1) % queue.length].id); }
+}
+
+function paintStageScale(){
+  const sc = stage.querySelector(".scale"); if (!sc) return;
+  const cur = notes[+sc.dataset.id];
+  sc.querySelectorAll("button").forEach(b => b.dataset.sel = (+b.dataset.v === cur) ? 1 : 0);
+}
+
+stage.addEventListener("click", e => {
+  const nav = e.target.closest("[data-nav]");
+  if (nav){ qi += +nav.dataset.nav; drawStage(); return; }
+  const r = onScaleClick(e);
+  if (r && !r.already) setTimeout(() => { qi++; drawStage(); }, 130);
+});
+
+withFormsBox.onchange = () => {
+  withForms = withFormsBox.checked;
+  saveSettings(); refreshProgress(); rowsEl.innerHTML = ""; resDirty = true;
+  buildQueue();
+};
+skipRated.onchange = () => buildQueue(current && current.id);
+shuffleBox.onchange = () => { if (shuffleBox.checked) shuffled = seedOrder(); buildQueue(); };
+genRate.onchange = () => buildQueue();
+
+document.addEventListener("keydown", e => {
+  if (view !== "rate" || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+  if (e.key >= "1" && e.key <= "9" && current){
+    e.preventDefault();
+    setNote(current.id, SCALE[+e.key - 1]);
+    setTimeout(() => { qi++; drawStage(); }, 130);
+  } else if (e.key === "ArrowRight"){ e.preventDefault(); qi++; drawStage(); }
+  else if (e.key === "ArrowLeft"){ e.preventDefault(); qi--; drawStage(); }
+  else if ((e.key === "Backspace" || e.key === "Delete") && current){ e.preventDefault(); setNote(current.id, null); }
+});
+
+/* ------------------------------------------------------------------
+   VUE « LISTE »
+------------------------------------------------------------------ */
+const rowsEl = document.getElementById("rows");
+const q = document.getElementById("q"), genList = document.getElementById("genList");
+const statut = document.getElementById("statut"), tri = document.getElementById("tri");
+const formFilter = document.getElementById("formFilter");
+
+function paintRow(row, id){
+  const cur = notes[id];
+  row.classList.toggle("rated", cur !== undefined);
+  row.querySelectorAll(".scale button").forEach(b => b.dataset.sel = (+b.dataset.v === cur) ? 1 : 0);
+}
+
+function renderList(){
+  const needle = norm(q.value.trim()), g = +genList.value, st = statut.value;
+  const sort = tri.value, ff = formFilter.value;
+  let list = POKE.filter(p => {
+    if (!inScope(p)) return false;
+    if (ff === "base" && p.form) return false;
+    if (ff === "form" && !p.form) return false;
+    if (g && genOf(p) !== g) return false;
+    if (st === "rated" && notes[p.id] === undefined) return false;
+    if (st === "unrated" && notes[p.id] !== undefined) return false;
+    if (needle && !p.key.includes(needle) && String(p.spid) !== needle) return false;
+    return true;
+  });
+  if (sort === "alpha") list.sort((a,b) => a.name.localeCompare(b.name,"fr"));
+  else if (sort === "best" || sort === "worst"){
+    const s = sort === "best" ? -1 : 1;
+    list.sort((a,b) => {
+      const na = notes[a.id], nb = notes[b.id];
+      if (na === undefined && nb === undefined) return a.id - b.id;
+      if (na === undefined) return 1;
+      if (nb === undefined) return -1;
+      return (na - nb) * s || a.id - b.id;
+    });
+  }
+  if (!list.length){ rowsEl.innerHTML = `<div class="empty">Aucun Pokémon ne correspond.</div>`; return; }
+
+  let h = "";
+  for (const p of list){
+    const types = [p.t1, p.t2].filter(Boolean).map(t => TYPES[t][0]).join(" · ");
+    h += `<div class="row${notes[p.id] !== undefined ? " rated" : ""}${p.form ? " isform" : ""}" data-id="${p.id}">`
+       + `<span class="num">n°${String(p.spid).padStart(4,"0")}</span>`
+       + `<span class="sp"><img loading="lazy" src="${sprite(p.id)}" alt=""></span>`
+       + `<span class="nm">${p.name}<em>${types}</em></span>`
+       + scaleHTML(p.id, "mini")
+       + `</div>`;
+  }
+  rowsEl.innerHTML = h;
+}
+rowsEl.addEventListener("click", onScaleClick);
+[q, genList, statut, tri, formFilter].forEach(el => el.addEventListener("input", renderList));
+
+/* ==================================================================
+   EXPORT EN IMAGE
+   La page est redessinée sur un canvas plutôt que photographiée : c'est le
+   seul moyen fiable hors ligne, et ça donne une image nette à deux fois la
+   résolution. Les sprites viennent d'un autre domaine, on les charge donc en
+   « crossOrigin » — sans quoi le navigateur interdirait d'enregistrer le canvas.
+================================================================== */
+const imgCache = new Map();
+function loadSprite(id){
+  if (imgCache.has(id)) return imgCache.get(id);
+  const p = new Promise(res => {
+    const im = new Image();
+    im.crossOrigin = "anonymous";
+    im.onload = () => res(im);
+    im.onerror = () => res(null);
+    im.src = sprite(id);
+  });
+  imgCache.set(id, p);
+  return p;
+}
+
+const PNG_BG = "#14141a", PNG_FG = "#f0f0f2", PNG_MUTED = "#8c8c96", PNG_LINE = "#2c2c34";
+
+function downloadCanvas(cv, name){
+  cv.toBlob(b => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(b);
+    a.download = name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }, "image/png");
+}
+
+function roundRect(c, x, y, w, h, r){
+  c.beginPath();
+  c.moveTo(x + r, y);
+  c.arcTo(x + w, y, x + w, y + h, r);
+  c.arcTo(x + w, y + h, x, y + h, r);
+  c.arcTo(x, y + h, x, y, r);
+  c.arcTo(x, y, x + w, y, r);
+  c.closePath();
+}
+
+/* Une tier list en image. `rows` décrit chaque ligne :
+   { label, color, items } où un item est soit { id, name } (une vignette),
+   soit { text, sub, color } (une pastille de texte). */
+async function exportTierPNG(title, subtitle, rows, filename){
+  const S = 2;                                   // deux fois la résolution pour rester net
+  const W = 1200, PAD = 28, LAB = 74, GAP = 12;
+  const CELL = 62, CHIP_H = 46, ROW_MIN = 74;
+
+  // on précharge toutes les vignettes avant de dessiner
+  const ids = rows.flatMap(r => r.items.filter(i => i.id !== undefined).map(i => i.id));
+  const sprites = new Map();
+  await Promise.all([...new Set(ids)].map(async id => sprites.set(id, await loadSprite(id))));
+
+  const bodyW = W - PAD * 2 - LAB - GAP;
+  const cv = document.createElement("canvas");
+  const c = cv.getContext("2d");
+  const font = (px, w = 400) => `${w} ${px}px ui-sans-serif,system-ui,"Segoe UI",Arial,sans-serif`;
+
+  // première passe : mesurer la hauteur de chaque ligne
+  const layout = rows.map(r => {
+    if (!r.items.length) return { r, h:ROW_MIN, lines:[] };
+    if (r.items[0].id !== undefined){
+      const perRow = Math.max(1, Math.floor(bodyW / CELL));
+      const nb = Math.ceil(r.items.length / perRow);
+      return { r, h:Math.max(ROW_MIN, nb * CELL + 12), perRow };
+    }
+    c.font = font(15, 600);
+    let x = 0, lines = 1;
+    const widths = r.items.map(it => {
+      c.font = font(15, 600); const a = c.measureText(it.text).width;
+      c.font = font(12);      const b = c.measureText(it.sub || "").width;
+      return Math.max(a, b) + 26;
+    });
+    widths.forEach(w => { if (x + w > bodyW && x > 0){ lines++; x = 0; } x += w + 7; });
+    return { r, h:Math.max(ROW_MIN, lines * (CHIP_H + 7) + 5), widths };
+  });
+
+  const headH = 96;
+  const H = headH + layout.reduce((s,l) => s + l.h + 7, 0) + PAD + 26;
+  cv.width = W * S; cv.height = H * S; c.scale(S, S);
+
+  c.fillStyle = PNG_BG; c.fillRect(0, 0, W, H);
+  c.fillStyle = PNG_FG; c.font = font(24, 600); c.textBaseline = "alphabetic";
+  c.fillText(title, PAD, PAD + 24);
+  c.fillStyle = PNG_MUTED; c.font = font(13);
+  c.fillText(subtitle, PAD, PAD + 48);
+
+  let y = headH;
+  for (const L of layout){
+    const r = L.r;
+    c.fillStyle = r.color; roundRect(c, PAD, y, LAB, L.h, 9); c.fill();
+    c.fillStyle = textOn(r.color); c.font = font(20, 700);
+    c.textAlign = "center"; c.textBaseline = "middle";
+    c.fillText(r.label, PAD + LAB / 2, y + L.h / 2);
+    c.textAlign = "left";
+
+    const bx = PAD + LAB + GAP;
+    c.strokeStyle = PNG_LINE; c.lineWidth = 1;
+    roundRect(c, bx, y, bodyW, L.h, 9); c.stroke();
+
+    if (!r.items.length){
+      c.fillStyle = PNG_MUTED; c.font = font(14);
+      c.fillText("—", bx + 14, y + L.h / 2);
+    } else if (r.items[0].id !== undefined){
+      r.items.forEach((it, i) => {
+        const cx = bx + 6 + (i % L.perRow) * CELL;
+        const cy = y + 6 + Math.floor(i / L.perRow) * CELL;
+        const im = sprites.get(it.id);
+        if (im) c.drawImage(im, cx, cy, CELL - 6, CELL - 6);
+      });
+    } else {
+      let x = bx + 6, ly = y + 6;
+      r.items.forEach((it, i) => {
+        const w = L.widths[i];
+        if (x + w > bx + bodyW - 6 && x > bx + 6){ x = bx + 6; ly += CHIP_H + 7; }
+        c.fillStyle = it.color; roundRect(c, x, ly, w, CHIP_H, 7); c.fill();
+        c.fillStyle = textOn(it.color);
+        c.font = font(15, 600); c.textBaseline = "alphabetic";
+        c.fillText(it.text, x + 13, ly + 20);
+        c.globalAlpha = .8; c.font = font(12);
+        c.fillText(it.sub || "", x + 13, ly + 36);
+        c.globalAlpha = 1;
+        x += w + 7;
+      });
+    }
+    y += L.h + 7;
+  }
+
+  c.fillStyle = PNG_MUTED; c.font = font(11); c.textBaseline = "alphabetic";
+  c.fillText(new Date().toLocaleDateString("fr-FR"), PAD, H - PAD + 8);
+
+  downloadCanvas(cv, filename);
+}
+
+/* L'arbre du tournoi en image : une colonne par tour, comme à l'écran. */
+async function exportBracketPNG(){
+  if (!duelRounds) return;
+  const S = 2, PAD = 26, COLW = 190, GAP = 30, SLOT = 30, HEAD = 104;
+  const ids = tourney.ids.filter(isId);
+  const sprites = new Map();
+  await Promise.all(ids.map(async id => sprites.set(id, await loadSprite(id))));
+
+  const W = PAD * 2 + duelRounds.length * COLW + (duelRounds.length - 1) * GAP;
+  const bodyH = duelRounds[0].length * (SLOT * 2 + 10);
+  const H = HEAD + bodyH + PAD + 20;
+
+  const cv = document.createElement("canvas");
+  const c = cv.getContext("2d");
+  cv.width = W * S; cv.height = H * S; c.scale(S, S);
+  const font = (px, w = 400) => `${w} ${px}px ui-sans-serif,system-ui,"Segoe UI",Arial,sans-serif`;
+
+  c.fillStyle = PNG_BG; c.fillRect(0, 0, W, H);
+  const champ = duelRounds[duelRounds.length - 1][0].w;
+  c.fillStyle = PNG_FG; c.font = font(22, 600); c.textBaseline = "alphabetic";
+  c.fillText(isId(champ) ? `Tournoi remporté par ${byId.get(champ).name}` : "Tournoi en cours", PAD, PAD + 22);
+  c.fillStyle = PNG_MUTED; c.font = font(13);
+  c.fillText(`${ids.length} participants · ${ids.length - 1} duels`, PAD, PAD + 44);
+
+  duelRounds.forEach((round, r) => {
+    const x = PAD + r * (COLW + GAP);
+    c.fillStyle = PNG_MUTED; c.font = font(11, 600);
+    c.fillText(roundName(round.length, r).toUpperCase(), x, HEAD - 14);
+    const slice = bodyH / round.length;
+    round.forEach((m, i) => {
+      const h = SLOT * 2;
+      const y = HEAD + i * slice + (slice - h) / 2;
+      c.strokeStyle = PNG_LINE; c.lineWidth = 1;
+      roundRect(c, x, y, COLW, h, 7); c.stroke();
+      c.beginPath(); c.moveTo(x, y + SLOT); c.lineTo(x + COLW, y + SLOT); c.stroke();
+      if (r < duelRounds.length - 1){
+        c.beginPath(); c.moveTo(x + COLW, y + SLOT); c.lineTo(x + COLW + GAP, y + SLOT); c.stroke();
+      }
+      [m.a, m.b].forEach((v, k) => {
+        const sy = y + k * SLOT;
+        if (!isId(v)){
+          c.fillStyle = PNG_MUTED; c.font = font(12);
+          c.fillText(m.bye ? "exempté" : "—", x + 10, sy + SLOT / 2 + 4);
+          return;
+        }
+        const im = sprites.get(v);
+        if (im) c.drawImage(im, x + 4, sy + 2, SLOT - 4, SLOT - 4);
+        const won = isId(m.w) && v === m.w;
+        c.globalAlpha = isId(m.w) && !won ? .42 : 1;
+        c.fillStyle = won ? PNG_FG : PNG_MUTED;
+        c.font = font(12, won ? 600 : 400);
+        let name = byId.get(v).name;
+        while (c.measureText(name).width > COLW - SLOT - 12 && name.length > 4) name = name.slice(0, -2) + "…";
+        c.fillText(name, x + SLOT + 4, sy + SLOT / 2 + 4);
+        c.globalAlpha = 1;
+      });
+    });
+  });
+  downloadCanvas(cv, "tournoi-pokemon.png");
+}
+
+/* ==================================================================
+   VUE « DUEL » — tournoi à élimination directe
+   Deux Pokémon s'affrontent, le vainqueur monte d'un tour, et l'arbre
+   se remplit sous les yeux. Le tournoi survit à la fermeture du site.
+================================================================== */
+const duelHead = document.getElementById("duelHead");
+const duelPlay = document.getElementById("duelPlay");
+const duelTree = document.getElementById("duelTree");
+
+const byId = new Map(POKE.map(p => [p.id, p]));
+
+/* Ordre des têtes de série d'un tableau à n places : 1-8, 4-5, 3-6, 2-7…
+   Les mieux classés se rencontrent le plus tard possible. */
+function seedPositions(n){
+  let a = [1];
+  while (a.length < n){
+    const m = a.length * 2 + 1;
+    a = a.flatMap(x => [x, m - x]);
+  }
+  return a;
+}
+
+/* Trois états possibles pour une place du tableau :
+     un nombre  → un Pokémon
+     null       → place vide, l'adversaire est exempté de ce tour
+     undefined  → place qui attend le résultat d'un match précédent
+   Les exemptions permettent de lancer un tournoi avec n'importe quel nombre de
+   participants : on complète jusqu'à la puissance de deux suivante, et ceux qui
+   tombent en face d'une place vide passent directement au tour d'après. */
+const isId = v => typeof v === "number";
+
+function buildRounds(t){
+  const rounds = [];
+  let entrants = t.ids.slice();
+  let r = 0;
+  while (entrants.length > 1){
+    const matches = [];
+    for (let i = 0; i < entrants.length; i += 2){
+      const a = entrants[i], b = entrants[i+1];
+      const rec = (t.results[r] || [])[i >> 1];
+      let w, bye = false;
+      if (isId(a) && b === null){ w = a; bye = true; }
+      else if (a === null && isId(b)){ w = b; bye = true; }
+      else if (a === null && b === null){ w = null; }
+      else if (isId(a) && isId(b)){ w = isId(rec) ? rec : undefined; }
+      else { w = undefined; }
+      matches.push({ a, b, w, bye, r, m:i >> 1 });
+    }
+    rounds.push(matches);
+    entrants = matches.map(x => x.w);
+    r++;
+  }
+  return rounds;
+}
+
+function nextMatch(rounds){
+  for (const round of rounds)
+    for (const x of round)
+      if (isId(x.a) && isId(x.b) && x.w === undefined) return x;
+  return null;
+}
+
+// nombre de duels réellement à jouer : autant que de participants, moins un
+function realCount(t){ return t.ids.filter(isId).length; }
+function playedCount(rounds){
+  return rounds.flat().filter(x => !x.bye && isId(x.a) && isId(x.b) && isId(x.w)).length;
+}
+
+// au-delà des seizièmes, les noms consacrés n'existent plus : on numérote les tours
+function roundName(nbMatches, idx){
+  return nbMatches === 1 ? "Finale"
+       : nbMatches === 2 ? "Demi-finales"
+       : nbMatches === 4 ? "Quarts de finale"
+       : nbMatches === 8 ? "Huitièmes de finale"
+       : nbMatches === 16 ? "Seizièmes de finale"
+       : `${idx + 1}${idx === 0 ? "er" : "e"} tour`;
+}
+
+/* ---------- écran de préparation ---------- */
+function duelSetupHTML(){
+  const opts = GENS.map(g => `<option value="${g.g}">Gén ${g.g} — ${g.region}</option>`).join("");
+  return `
+    <div class="blk">
+      <h2>Lancer un tournoi</h2>
+      <p class="sub">Les Pokémon s'affrontent deux par deux, tu choisis celui que tu préfères,
+        et l'arbre se construit au fur et à mesure.</p>
+      <div class="setting">
+        Faire s'affronter
+        <select id="dSize">
+          <option value="8">8 Pokémon</option>
+          <option value="16" selected>16 Pokémon</option>
+          <option value="32">32 Pokémon</option>
+          <option value="64">64 Pokémon</option>
+          <option value="128">128 Pokémon</option>
+          <option value="256">256 Pokémon</option>
+          <option value="512">512 Pokémon</option>
+          <option value="all">tous ceux de la sélection</option>
+        </select>
+        choisis
+        <select id="dPick">
+          <option value="random">au hasard</option>
+          <option value="best">parmi mes mieux notés</option>
+        </select>
+        parmi
+        <select id="dPool">
+          <option value="0">tous les Pokémon</option>
+          <option value="rated">ceux que j'ai déjà notés</option>
+          ${opts}
+        </select>
+        <em id="dHint"></em>
+      </div>
+      <div class="duelbar"><button id="dStart">Lancer le tournoi</button></div>
+    </div>`;
+}
+
+function duelPool(){
+  const pool = document.getElementById("dPool").value;
+  let list = POKE.filter(inScope);
+  if (pool === "rated") list = list.filter(p => notes[p.id] !== undefined);
+  else if (+pool) list = list.filter(p => genOf(p) === +pool);
+  return list;
+}
+
+function nextPow2(n){ let s = 1; while (s < n) s *= 2; return s; }
+function wantedSize(){
+  const v = document.getElementById("dSize").value;
+  return v === "all" ? Infinity : +v;
+}
+
+function updateDuelHint(){
+  const el = document.getElementById("dHint"); if (!el) return;
+  const n = Math.min(duelPool().length, wantedSize());
+  if (n < 2){ el.textContent = "Il faut au moins 2 Pokémon dans cette sélection."; return; }
+  const byes = nextPow2(n) - n;
+  el.textContent = `${n} participant${n > 1 ? "s" : ""}, soit ${n - 1} duels`
+    + (byes ? ` — ${byes} d'entre eux commenceront un tour plus haut, faute d'un nombre rond.` : ".")
+    + (n > 256 ? " L'arbre sera très long à faire défiler." : "");
+}
+
+function startTourney(){
+  const pick = document.getElementById("dPick").value;
+  const pool = duelPool();
+  const n = Math.min(pool.length, wantedSize());
+  if (n < 2){ alert("Il faut au moins 2 Pokémon dans la sélection."); return; }
+
+  let ranked;
+  if (pick === "best"){
+    ranked = pool.slice().sort((a,b) =>
+      (notes[b.id] ?? -99) - (notes[a.id] ?? -99) || a.id - b.id).slice(0, n);
+  } else {
+    const bag = pool.slice();
+    for (let i = bag.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [bag[i], bag[j]] = [bag[j], bag[i]];
+    }
+    ranked = bag.slice(0, n);
+  }
+
+  /* On complète le tableau jusqu'à la puissance de deux suivante avec des places vides.
+     L'ordre des têtes de série fait que ces places tombent en face des mieux placés :
+     ce sont donc eux qui sautent le premier tour, et les exemptions restent réparties. */
+  const size = nextPow2(n);
+  const slots = ranked.map(p => p.id);
+  while (slots.length < size) slots.push(null);
+  const ids = seedPositions(size).map(s => slots[s - 1]);
+
+  tourney = { size, ids, results:[] };
+  save(); renderDuel();
+}
+
+/* ---------- l'arène ---------- */
+function fighterHTML(id, side){
+  const p = byId.get(id);
+  const types = [p.t1, p.t2].filter(Boolean)
+    .map(t => `<span class="type" style="background:${TYPES[t][1]};color:${textOn(TYPES[t][1])}">${TYPES[t][0]}</span>`).join("");
+  return `
+    <div class="fighter" data-win="${id}">
+      <div class="art"><img src="${art(p.id)}" alt="${p.name}" onerror="this.onerror=null;this.src='${sprite(p.id)}'"></div>
+      <div class="fname">${p.name}</div>
+      <div class="fmeta">n°${String(p.spid).padStart(4,"0")} · Gén ${genOf(p)}</div>
+      <div class="types">${types}</div>
+      <span class="key">${side === "a" ? "←" : "→"}</span>
+    </div>`;
+}
+
+/* ---------- l'arbre ---------- */
+function slotHTML(v, state, bye){
+  if (!isId(v)) return `<div class="bslot empty"><span>${bye ? "exempté" : "—"}</span></div>`;
+  const p = byId.get(v);
+  return `<div class="bslot ${state}"><img loading="lazy" src="${sprite(v)}" alt=""><span>${p.name}</span></div>`;
+}
+
+function matchHTML(x, isNow){
+  const st = v => !isId(x.w) ? "" : (v === x.w ? "win" : "lose");
+  return `<div class="bmatch${isNow ? " now" : ""}${x.bye ? " bye" : ""}" id="bm-${x.r}-${x.m}">`
+       + slotHTML(x.a, st(x.a), x.bye) + slotHTML(x.b, st(x.b), x.bye) + `</div>`;
+}
+
+function treeHTML(rounds, cur){
+  let h = `<div class="bracket">`;
+  rounds.forEach((round, r) => {
+    h += `<div class="bcol"><div class="brtitle">${roundName(round.length, r)}</div><div class="bround">`;
+    for (const x of round) h += matchHTML(x, cur && cur.r === x.r && cur.m === x.m);
+    h += `</div></div>`;
+  });
+  return h + `</div>`;
+}
+
+/* ---------- assemblage ---------- */
+let duelRounds = null;   // l'arbre courant, gardé en mémoire pour éviter de tout recalculer
+
+function renderDuelHead(rounds, cur){
+  const played = playedCount(rounds), total = realCount(tourney) - 1;
+  duelHead.innerHTML = `
+    <div class="duelbar">
+      <h2>${cur ? roundName(rounds[cur.r].length, cur.r) : "Tournoi terminé"}</h2>
+      <span class="step">duel ${Math.min(played + 1, total)} / ${total}</span>
+      ${played ? `<button id="dUndo">Annuler le dernier</button>` : ""}
+      <button id="dPng">Enregistrer l'arbre en image</button>
+      <button id="dNew">Nouveau tournoi</button>
+    </div>`;
+
+  const png = document.getElementById("dPng");
+  png.onclick = async () => {
+    const t = png.textContent;
+    png.textContent = "préparation…"; png.disabled = true;
+    try { await exportBracketPNG(); } catch(e){ alert("L'image n'a pas pu être créée."); }
+    png.textContent = t; png.disabled = false;
+  };
+
+  const undo = document.getElementById("dUndo");
+  if (undo) undo.onclick = () => {
+    const all = duelRounds.flat().filter(x => !x.bye && isId(x.a) && isId(x.b) && isId(x.w));
+    const last = all[all.length - 1];
+    tourney.results[last.r][last.m] = undefined;
+    save(); renderDuel();
+  };
+  document.getElementById("dNew").onclick = () => {
+    if (played && !confirm("Abandonner le tournoi en cours ?")) return;
+    tourney = null; save(); renderDuel();
+  };
+}
+
+function renderArena(rounds, cur){
+  if (cur){
+    duelPlay.innerHTML = `
+      <div class="arena">
+        ${fighterHTML(cur.a, "a")}
+        <div class="vs">VS</div>
+        ${fighterHTML(cur.b, "b")}
+      </div>`;
+    // précharge le duel suivant pour éviter le clignotement
+    const after = rounds.flat().find(x => x !== cur && isId(x.a) && isId(x.b) && x.w === undefined);
+    if (after){ [after.a, after.b].forEach(id => { const im = new Image(); im.src = art(id); }); }
+  } else {
+    const champ = byId.get(rounds[rounds.length - 1][0].w);
+    duelPlay.innerHTML = `
+      <div class="champion">
+        <div class="crown">Vainqueur</div>
+        <div class="art"><img src="${art(champ.id)}" alt="${champ.name}" onerror="this.onerror=null;this.src='${sprite(champ.id)}'"></div>
+        <div class="cname">${champ.name}</div>
+      </div>`;
+  }
+}
+
+function renderDuel(){
+  if (!tourney){
+    duelHead.innerHTML = duelSetupHTML();
+    duelPlay.innerHTML = ""; duelTree.innerHTML = ""; duelRounds = null;
+    ["dSize","dPick","dPool"].forEach(id => document.getElementById(id).onchange = updateDuelHint);
+    updateDuelHint();
+    document.getElementById("dStart").onclick = startTourney;
+    return;
+  }
+  duelRounds = buildRounds(tourney);
+  const cur = nextMatch(duelRounds);
+  renderDuelHead(duelRounds, cur);
+  renderArena(duelRounds, cur);
+  duelTree.innerHTML = treeHTML(duelRounds, cur);
+}
+
+/* Un tournoi à 1212 participants, c'est un arbre de plus de 4000 cases : le redessiner
+   à chaque clic serait insupportable. On ne retouche donc que les cases concernées. */
+function patchTree(done, winner){
+  const el = duelTree.querySelector(`#bm-${done.r}-${done.m}`);
+  if (el){
+    el.classList.remove("now");
+    el.children[0].className = "bslot " + (done.a === winner ? "win" : "lose");
+    el.children[1].className = "bslot " + (done.b === winner ? "win" : "lose");
+  }
+  const nel = duelTree.querySelector(`#bm-${done.r + 1}-${done.m >> 1}`);
+  if (nel) nel.children[done.m % 2].outerHTML = slotHTML(winner, "", false);
+
+  const nx = nextMatch(duelRounds);
+  if (nx){
+    const e2 = duelTree.querySelector(`#bm-${nx.r}-${nx.m}`);
+    if (e2) e2.classList.add("now");
+  }
+  return nx;
+}
+
+function pickWinner(id){
+  if (!duelRounds) return;
+  const cur = nextMatch(duelRounds);
+  if (!cur || (id !== cur.a && id !== cur.b)) return;
+  if (!tourney.results[cur.r]) tourney.results[cur.r] = [];
+  tourney.results[cur.r][cur.m] = id;
+  save();
+  duelRounds = buildRounds(tourney);
+  const nx = patchTree(cur, id);
+  renderDuelHead(duelRounds, nx);
+  renderArena(duelRounds, nx);
+}
+
+duelPlay.addEventListener("click", e => {
+  const f = e.target.closest(".fighter"); if (!f) return;
+  pickWinner(+f.dataset.win);
+});
+
+document.addEventListener("keydown", e => {
+  if (view !== "duel" || !tourney || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+  const cur = duelRounds && nextMatch(duelRounds); if (!cur) return;
+  if (e.key === "ArrowLeft"){ e.preventDefault(); pickWinner(cur.a); }
+  else if (e.key === "ArrowRight"){ e.preventDefault(); pickWinner(cur.b); }
+});
+
+/* ------------------------------------------------------------------
+   VUE « RÉSULTATS » — les deux tier lists
+------------------------------------------------------------------ */
+const resEl = document.getElementById("v-res");
+let resDirty = true;
+
+function stats(){
+  return GENS.map(g => {
+    const pk = POKE.filter(p => inScope(p) && genOf(p) === g.g);
+    const rated = pk.filter(p => notes[p.id] !== undefined);
+    const total = rated.reduce((s,p) => s + notes[p.id], 0);
+    return { ...g, count:pk.length, rated:rated.length, total,
+             avg: rated.length ? total / rated.length : null };
+  });
+}
+
+/* Répartition relative : la meilleure génération vise S, la moins bonne F.
+   On mélange deux mesures à parts égales :
+     - l'écart réel des scores (deux générations proches restent dans le même tier)
+     - le rang (empêche une génération très basse d'écraser toute l'échelle)
+   Les ex æquo partagent le même rang, donc le même tier. */
+function assignTiers(items, valueOf){
+  const vals = items.map(valueOf);
+  const min = Math.min(...vals), max = Math.max(...vals);
+  const n = items.length;
+
+  // rang moyen (0 = meilleur), ex æquo confondus
+  const sorted = vals.slice().sort((a,b) => b - a);
+  const rankOf = v => {
+    const first = sorted.indexOf(v), last = sorted.lastIndexOf(v);
+    return (first + last) / 2;
+  };
+
+  const buckets = TIERS.map(() => []);
+  items.forEach((it, i) => {
+    const byValue = max === min ? 0.5 : (vals[i] - min) / (max - min);
+    const byRank  = n === 1 ? 0.5 : (n - 1 - rankOf(vals[i])) / (n - 1);
+    const t = (byValue + byRank) / 2;
+    buckets[6 - Math.min(6, Math.floor(t * 7))].push(it);
+  });
+  return buckets;
+}
+
+function fmt(n, d = 0){
+  const s = n.toFixed(d);
+  return (n > 0 ? "+" : "") + s;
+}
+function cls(n){ return n > 0 ? "pos" : n < 0 ? "neg" : ""; }
+
+// une ligne de tier list : l'étiquette colorée à gauche, les vignettes à droite
+function tierRow(label, style, inner, empty){
+  return `<div class="tier"><div class="tlab" style="${style}">${label}</div>`
+       + `<div class="tbody${empty ? " none" : ""}">${empty ? "—" : inner}</div></div>`;
+}
+
+// les sept paquets S→F, triés du meilleur au moins bon dans chaque tier
+function tierBuckets(items, valueOf){
+  if (!items.length) return TIERS.map(() => []);
+  const buckets = assignTiers(items, valueOf);
+  buckets.forEach(b => b.sort((x,y) => valueOf(y) - valueOf(x)));
+  return buckets;
+}
+
+/* Tier list S→F répartie par assignTiers.
+   `unranked` regroupe ce qui n'a reçu aucune note : classé nulle part, mais pas caché. */
+function tierListHTML(items, valueOf, chipOf, unranked){
+  let h = "";
+  if (items.length){
+    tierBuckets(items, valueOf).forEach((b, i) =>
+      h += tierRow(TIERS[i][0], `background:var(${TIERS[i][1]})`, b.map(chipOf).join(""), !b.length));
+  }
+  if (unranked && unranked.length){
+    h += tierRow("?", "background:var(--line);color:var(--muted)", unranked.map(chipOf).join(""), false);
+  }
+  return h;
+}
+
+function genChip(g){
+  return `<div class="gchip"><b>Gén ${g.g} · ${g.region}</b><span>${g.label}</span></div>`;
+}
+
+/* ---------- onglet 1 : les générations ---------- */
+function genTabHTML(S){
+  const rows = S.slice().sort((a,b) => b.total - a.total).map(g => `
+    <tr>
+      <td>Gén ${g.g} — ${g.region}</td>
+      <td>${g.rated} / ${g.count}</td>
+      <td class="${cls(g.total)}">${g.rated ? fmt(g.total) : "—"}</td>
+      <td class="${g.avg === null ? "" : cls(g.avg)}">${g.avg === null ? "—" : fmt(g.avg, 2)}</td>
+    </tr>`).join("");
+
+  const ranked   = S.filter(g => g.rated > 0);
+  const unranked = S.filter(g => g.rated === 0).map(g => ({ ...g, label:"aucune note" }));
+
+  const withLabel = f => ranked.map(g => ({ ...g, label:f(g) }));
+
+  return `
+    <div class="setting">
+      Rattacher les formes (Méga, Gigamax, Alola…) à
+      <select id="genModeSel">
+        <option value="intro">la génération qui les a introduites</option>
+        <option value="origin">la génération du Pokémon d'origine</option>
+      </select>
+      <em id="genModeHint"></em>
+    </div>
+
+    <div class="blk">
+      <h2>1 · Tier list par points totaux</h2>
+      <p class="sub">Somme brute des points de chaque génération. Les grosses générations sont avantagées, c'est normal.</p>
+      ${tierListHTML(withLabel(g => `${fmt(g.total)} pt${Math.abs(g.total) > 1 ? "s" : ""} · ${g.rated} noté${g.rated > 1 ? "s" : ""}`),
+                     g => g.total, genChip, unranked)}
+      <div class="pngbar"><button data-png="gen-total">Enregistrer en image</button></div>
+    </div>
+
+    <div class="blk">
+      <h2>2 · Tier list par points rapportés au nombre de Pokémon</h2>
+      <p class="sub">Points totaux ÷ nombre de Pokémon notés de la génération. Toutes les générations sont à égalité.</p>
+      ${tierListHTML(withLabel(g => `${fmt(g.avg,2)} pt/Pokémon · ${g.rated} noté${g.rated > 1 ? "s" : ""}`),
+                     g => g.avg, genChip, unranked)}
+      <div class="pngbar"><button data-png="gen-avg">Enregistrer en image</button></div>
+    </div>
+
+    <div class="blk">
+      <h2>Le détail</h2>
+      <table>
+        <thead><tr><th>Génération</th><th>Notés</th><th>Points</th><th>Points / Pokémon</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+
+    <div class="foot">
+      <button id="exp">Exporter mes notes</button>
+      <button id="imp">Importer</button>
+      <button id="rst" class="danger">Tout effacer</button>
+    </div>
+    <div class="fileline" id="fileline"></div>`;
+}
+
+/* ---------- onglet 2 : tous les Pokémon notés ---------- */
+// une teinte par montant de points, du vert franc au rouge franc
+const SCALE_COLOR = {
+  "10":"#157f45", "5":"#2f9c5f", "3":"#52ad6e", "1":"#6ab077", "0":"#8a8a94",
+  "-1":"#c47f70", "-3":"#cf6a55", "-5":"#c2452f", "-10":"#a82a1f"
+};
+let pokeTabGen = 0;
+
+function pokeTabHTML(){
+  const rated = POKE.filter(p => inScope(p) && notes[p.id] !== undefined
+                              && (!pokeTabGen || genOf(p) === pokeTabGen));
+  const opts = GENS.map(g => `<option value="${g.g}"${pokeTabGen === g.g ? " selected" : ""}>Gén ${g.g} — ${g.region}</option>`).join("");
+
+  let rows = "";
+  for (const v of SCALE.slice().sort((a,b) => b - a)){
+    const grp = rated.filter(p => notes[p.id] === v).sort((a,b) => a.spid - b.spid || a.id - b.id);
+    const chips = grp.map(p =>
+      `<span class="pchip" title="${p.name}"><img loading="lazy" src="${sprite(p.id)}" alt="${p.name}"></span>`).join("");
+    rows += tierRow(v > 0 ? "+" + v : String(v), `background:${SCALE_COLOR[v]};color:#fff`,
+                    `<div class="tbody-inner">${chips}</div><span class="tcount">${grp.length}</span>`,
+                    !grp.length);
+  }
+
+  return `
+    <div class="setting">
+      Afficher <select id="pokeGenSel"><option value="0">toutes les générations</option>${opts}</select>
+      <em>${rated.length} Pokémon noté${rated.length > 1 ? "s" : ""} affiché${rated.length > 1 ? "s" : ""}. Survole une vignette pour voir le nom.</em>
+    </div>
+    <div class="blk">
+      <h2>Ta tier list de tous les Pokémon</h2>
+      <p class="sub">Chaque Pokémon est rangé dans la ligne du montant que tu lui as donné. Les non notés n'apparaissent pas.</p>
+      ${rows}
+      <div class="pngbar"><button data-png="poke">Enregistrer en image</button></div>
+    </div>`;
+}
+
+/* ---------- onglet 3 : les types ---------- */
+function typeStats(){
+  const out = [];
+  for (const id in TYPES){
+    const t = +id;
+    const pk = POKE.filter(p => inScope(p) && (p.t1 === t || p.t2 === t));
+    if (!pk.length) continue;                       // type sans aucun Pokémon dans la sélection
+    const rated = pk.filter(p => notes[p.id] !== undefined);
+    const total = rated.reduce((s,p) => s + notes[p.id], 0);
+    out.push({ t, name:TYPES[t][0], color:TYPES[t][1], count:pk.length,
+               rated:rated.length, total, avg: rated.length ? total / rated.length : null });
+  }
+  return out;
+}
+
+function typeChip(x){
+  return `<div class="tchip" style="background:${x.color};color:${textOn(x.color)}"><b>${x.name}</b><span>${x.label}</span></div>`;
+}
+
+function typeTabHTML(){
+  const T = typeStats();
+  const ranked = T.filter(x => x.rated > 0)
+                  .map(x => ({ ...x, label:`${fmt(x.avg,2)} pt/Pokémon · ${x.rated} noté${x.rated > 1 ? "s" : ""}` }));
+  const unranked = T.filter(x => x.rated === 0).map(x => ({ ...x, label:"aucune note" }));
+
+  const rows = T.slice().sort((a,b) => (b.avg === null) - (a.avg === null) || b.avg - a.avg).map(x => `
+    <tr>
+      <td>${x.name}</td>
+      <td>${x.rated} / ${x.count}</td>
+      <td class="${cls(x.total)}">${x.rated ? fmt(x.total) : "—"}</td>
+      <td class="${x.avg === null ? "" : cls(x.avg)}">${x.avg === null ? "—" : fmt(x.avg, 2)}</td>
+    </tr>`).join("");
+
+  return `
+    <div class="blk">
+      <h2>Tier list des types, en points par Pokémon</h2>
+      <p class="sub">Même calcul que pour les générations : points totaux ÷ nombre de Pokémon notés du type.
+        Un Pokémon à deux types compte pour ses deux types.</p>
+      ${tierListHTML(ranked, x => x.avg, typeChip, unranked)}
+      <div class="pngbar"><button data-png="type">Enregistrer en image</button></div>
+    </div>
+    <div class="blk">
+      <h2>Le détail</h2>
+      <table>
+        <thead><tr><th>Type</th><th>Notés</th><th>Points</th><th>Points / Pokémon</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+/* ---------- les exports en image ---------- */
+const CHIP_BG = "#232330";                   // fond neutre des pastilles dans l'image
+
+// une ligne « ? » pour ce qui n'a reçu aucune note
+function unrankedRow(items){
+  return items.length ? [{ label:"?", color:"#3a3a46", items }] : [];
+}
+
+function exportGenPNG(kind){
+  const S = stats();
+  const ranked = S.filter(g => g.rated > 0);
+  const valueOf = kind === "total" ? g => g.total : g => g.avg;
+  const sub = kind === "total"
+    ? g => `${fmt(g.total)} pt${Math.abs(g.total) > 1 ? "s" : ""} · ${g.rated} noté${g.rated > 1 ? "s" : ""}`
+    : g => `${fmt(g.avg,2)} pt/Pokémon · ${g.rated} noté${g.rated > 1 ? "s" : ""}`;
+  const chip = g => ({ text:`Gén ${g.g} · ${g.region}`, sub:sub(g), color:CHIP_BG });
+
+  const rows = tierBuckets(ranked, valueOf).map((b, i) =>
+    ({ label:TIERS[i][0], color:TIERS[i][2], items:b.map(chip) }))
+    .concat(unrankedRow(S.filter(g => g.rated === 0)
+      .map(g => ({ text:`Gén ${g.g} · ${g.region}`, sub:"aucune note", color:CHIP_BG }))));
+
+  return exportTierPNG(
+    kind === "total" ? "Tier list des générations — points totaux"
+                     : "Tier list des générations — points par Pokémon",
+    kind === "total" ? "Somme brute des points de chaque génération."
+                     : "Points totaux ÷ nombre de Pokémon notés de la génération.",
+    rows, `tierlist-generations-${kind === "total" ? "points" : "moyenne"}.png`);
+}
+
+function exportPokePNG(){
+  const rated = POKE.filter(p => inScope(p) && notes[p.id] !== undefined
+                              && (!pokeTabGen || genOf(p) === pokeTabGen));
+  const rows = SCALE.slice().sort((a,b) => b - a).map(v => ({
+    label: v > 0 ? "+" + v : String(v),
+    color: SCALE_COLOR[v],
+    items: rated.filter(p => notes[p.id] === v)
+                .sort((a,b) => a.spid - b.spid || a.id - b.id)
+                .map(p => ({ id:p.id, name:p.name }))
+  }));
+  const où = pokeTabGen ? ` — Génération ${pokeTabGen}` : "";
+  return exportTierPNG("Ma tier list des Pokémon" + où,
+    `${rated.length} Pokémon notés, rangés par montant de points.`,
+    rows, "tierlist-pokemon.png");
+}
+
+function exportTypePNG(){
+  const T = typeStats();
+  const ranked = T.filter(x => x.rated > 0);
+  const chip = x => ({ text:x.name, color:x.color,
+                       sub:`${fmt(x.avg,2)} pt/Pokémon · ${x.rated} noté${x.rated > 1 ? "s" : ""}` });
+  const rows = tierBuckets(ranked, x => x.avg).map((b, i) =>
+    ({ label:TIERS[i][0], color:TIERS[i][2], items:b.map(chip) }))
+    .concat(unrankedRow(T.filter(x => x.rated === 0)
+      .map(x => ({ text:x.name, sub:"aucune note", color:x.color }))));
+
+  return exportTierPNG("Tier list des types",
+    "Points totaux ÷ nombre de Pokémon notés du type. Un Pokémon à deux types compte pour ses deux types.",
+    rows, "tierlist-types.png");
+}
+
+// le bouton passe en « préparation… » le temps de charger les vignettes
+function wirePngButtons(root){
+  root.querySelectorAll("[data-png]").forEach(b => b.onclick = async () => {
+    const label = b.textContent;
+    b.textContent = "préparation…"; b.disabled = true;
+    try {
+      const k = b.dataset.png;
+      if (k === "gen-total" || k === "gen-avg") await exportGenPNG(k === "gen-total" ? "total" : "avg");
+      else if (k === "poke") await exportPokePNG();
+      else await exportTypePNG();
+    } catch(e){ alert("L'image n'a pas pu être créée."); }
+    b.textContent = label; b.disabled = false;
+  });
+}
+
+/* ---------- assemblage ---------- */
+let resTab = "gen";
+const resKpis = document.getElementById("resKpis");
+const resBody = document.getElementById("resBody");
+const segbar  = document.getElementById("segbar");
+
+segbar.addEventListener("click", e => {
+  const b = e.target.closest("button[data-res]"); if (!b) return;
+  resTab = b.dataset.res; renderRes(); window.scrollTo(0, 0);
+});
+
+function renderRes(){
+  const S = stats();
+  const totalRated = S.reduce((s,g) => s + g.rated, 0);
+  const totalPts = S.reduce((s,g) => s + g.total, 0);
+  const ratedForms = POKE.filter(p => p.form && notes[p.id] !== undefined).length;
+
+  if (!totalRated){
+    resKpis.innerHTML = `<div class="done">Note au moins un Pokémon pour voir les classements.</div>`;
+    segbar.hidden = true; resBody.innerHTML = ""; resDirty = false; return;
+  }
+  segbar.hidden = false;
+  segbar.querySelectorAll("button").forEach(b => b.setAttribute("aria-current", b.dataset.res === resTab));
+
+  resKpis.innerHTML = `
+    <div class="kpis">
+      <div class="kpi"><b>${totalRated}</b><span>Pokémon notés</span></div>
+      <div class="kpi"><b class="${cls(totalPts)}">${fmt(totalPts)}</b><span>points distribués</span></div>
+      <div class="kpi"><b class="${cls(totalPts/totalRated)}">${fmt(totalPts/totalRated,2)}</b><span>points par Pokémon</span></div>
+      <div class="kpi"><b>${ratedForms}</b><span>formes alternatives notées</span></div>
+    </div>`;
+
+  resBody.innerHTML = resTab === "gen"  ? genTabHTML(S)
+                    : resTab === "poke" ? pokeTabHTML()
+                    :                     typeTabHTML();
+
+  if (resTab === "gen"){
+    const gm = resBody.querySelector("#genModeSel");
+    gm.value = genMode;
+    resBody.querySelector("#genModeHint").textContent =
+      genMode === "intro" ? "Méga-Dracaufeu compte pour la 6G, Miaouss de Galar pour la 8G."
+                          : "Méga-Dracaufeu et Miaouss de Galar comptent tous deux pour la 1G.";
+    gm.onchange = () => {
+      genMode = gm.value; saveSettings();
+      rowsEl.innerHTML = ""; buildQueue(); renderRes();
+    };
+    resBody.querySelector("#exp").onclick = doExport;
+    resBody.querySelector("#imp").onclick = () => fileEl.click();
+    resBody.querySelector("#rst").onclick = () => {
+      if (confirm("Effacer toutes tes notes ? C'est irréversible.")){
+        notes = {}; save(); flush(); refreshProgress(); renderList(); buildQueue(); renderRes();
+      }
+    };
+    renderFileLine();
+  }
+  if (resTab === "poke"){
+    const sel = resBody.querySelector("#pokeGenSel");
+    sel.onchange = () => { pokeTabGen = +sel.value; renderRes(); };
+  }
+  wirePngButtons(resBody);
+  resDirty = false;
+}
+
+// état de la sauvegarde fichier, affiché en bas de la page Résultats
+function renderFileLine(){
+  const el = document.getElementById("fileline");
+  if (!el) return;
+  if (!canFile){
+    el.innerHTML = `Tes notes sont enregistrées dans ce navigateur. Pour les emmener ailleurs, utilise l'export.`;
+    return;
+  }
+  if (fileHandle && fileOk){
+    el.innerHTML = `<span class="on">●</span> Enregistrement automatique dans <b>${fileHandle.name}</b>`
+                 + ` <button id="unlink">délier</button>`;
+    el.querySelector("#unlink").onclick = unlinkFile;
+  } else if (fileHandle){
+    el.innerHTML = `Fichier <b>${fileHandle.name}</b> lié mais en attente d'autorisation`
+                 + ` <button id="relink">reconnecter</button>`;
+    el.querySelector("#relink").onclick = reconnectFile;
+  } else {
+    el.innerHTML = `Sécurité en plus : <button id="link">enregistrer aussi dans un fichier</button>`
+                 + ` — tes notes y seront réécrites à chaque clic, même si le navigateur est réinitialisé.`;
+    el.querySelector("#link").onclick = linkFile;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Export / import
+------------------------------------------------------------------ */
+const fileEl = document.getElementById("file");
+function doExport(){
+  const blob = new Blob([JSON.stringify({ app:"pokemon-tierlist", version:1, notes }, null, 1)],
+                        { type:"application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "mes-notes-pokemon.json";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+fileEl.onchange = () => {
+  const f = fileEl.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const d = JSON.parse(r.result);
+      notes = sanitize(d && d.notes ? d.notes : d);
+      save(); flush(); refreshProgress(); renderList(); buildQueue(); renderRes();
+      alert(Object.keys(notes).length + " notes importées.");
+    } catch(e){ alert("Fichier illisible."); }
+  };
+  r.readAsText(f);
+  fileEl.value = "";
+};
+
+/* ------------------------------------------------------------------
+   Navigation entre les vues
+------------------------------------------------------------------ */
+let view = "rate";
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => show(b.dataset.view));
+function show(v){
+  view = v;
+  document.querySelectorAll("nav button").forEach(b => b.setAttribute("aria-current", b.dataset.view === v));
+  document.querySelectorAll(".view").forEach(s => s.classList.toggle("on", s.id === "v-" + v));
+  if (v === "list" && !rowsEl.childElementCount) renderList();
+  if (v === "duel") renderDuel();
+  if (v === "res" && resDirty) renderRes();
+  window.scrollTo(0, 0);
+}
+
+/* ------------------------------------------------------------------
+   Démarrage
+------------------------------------------------------------------ */
+for (const g of GENS){
+  const o1 = new Option(`Gén ${g.g} — ${g.region}`, g.g);
+  const o2 = new Option(`Gén ${g.g} — ${g.region}`, g.g);
+  genRate.add(o1); genList.add(o2);
+}
+refreshProgress();
+buildQueue();
+saveEl.dataset.s = "ok";
+saveEl.textContent = Object.keys(notes).length ? "sauvegardé" : "";
+restore();
+</script>
+</body>
+</html>
